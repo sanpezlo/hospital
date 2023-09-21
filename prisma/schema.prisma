@@ -7,5 +7,22 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_PRISMA_URL")
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+}
+
+enum Role {
+  ADMIN
+  DIRECTOR
+  DOCTOR
+  USER
 }
