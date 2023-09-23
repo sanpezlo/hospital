@@ -1,12 +1,11 @@
 "use client";
 
-import { Input, Button } from "@nextui-org/react";
+import { Input, Button, Checkbox } from "@nextui-org/react";
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
-import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignUp() {
-  const router = useRouter();
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -24,12 +23,11 @@ export default function SignUp() {
 
     if (response.ok) {
       alert("Paciente creado correctamente");
-      setData({
-        name: "",
-        email: "",
-        password: "",
+      signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        callbackUrl: "/",
       });
-      router.push("/auth/login");
     }
   };
 
@@ -74,7 +72,8 @@ export default function SignUp() {
         onChange={(e) => setData({ ...data, password: e.target.value })}
       />
 
-      <div className="flex gap-2 justify-end">
+      <div className="flex gap-4 flex-col">
+        <Checkbox isRequired>Acepto los términos y condiciones</Checkbox>
         <Button fullWidth color="primary" type="submit">
           Registrar
         </Button>
