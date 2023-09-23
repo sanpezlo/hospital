@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
         }
       );
     }
+    return NextResponse.error();
   }
 }
 
@@ -68,5 +69,6 @@ export async function POST(request: NextRequest) {
         }
       );
     }
+    return NextResponse.error();
   }
 }
