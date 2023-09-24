@@ -2,7 +2,7 @@ import { isHttpError } from "http-errors";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-export async function errorHandler(handler: () => Promise<unknown>) {
+export async function errorHandler(handler: () => Promise<Response>) {
   try {
     return await handler();
   } catch (error) {
