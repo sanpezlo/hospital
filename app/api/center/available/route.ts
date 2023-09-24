@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { errorHandler } from "@/lib/error-hanlder";
 
 export async function GET(request: NextRequest) {
-  try {
+  return errorHandler(async () => {
     const centers = await prisma.center.findMany({
       where: {
         users: {
@@ -13,17 +14,5 @@ export async function GET(request: NextRequest) {
       },
     });
     return NextResponse.json(centers);
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    }
-    return NextResponse.error();
-  }
+  });
 }

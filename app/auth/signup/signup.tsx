@@ -11,7 +11,13 @@ export default function SignUp() {
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [isVisible, setIsVisible] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,13 +27,28 @@ export default function SignUp() {
       body: JSON.stringify(data),
     });
 
+    const body = await response.json();
+
     if (response.ok) {
-      alert("Paciente creado correctamente");
       signIn("credentials", {
         email: data.email,
         password: data.password,
         callbackUrl: "/",
       });
+    } else if (response.status === 400) {
+      if (body.error.error) {
+        Object.keys(body.error.error).forEach((key) => {
+          if (key === "_errors") return;
+          setErrors((prev) => ({
+            ...prev,
+            [key]: body.error.error[key]._errors[0],
+          }));
+        });
+      } else {
+        setErrors((prev) => ({ ...prev, email: body.error.message }));
+      }
+    } else {
+      console.log({ response, body });
     }
   };
 
@@ -39,7 +60,12 @@ export default function SignUp() {
         placeholder="Ingrese su nombre"
         type="text"
         value={data.name}
-        onChange={(e) => setData({ ...data, name: e.target.value })}
+        onChange={(e) => {
+          setErrors((prev) => ({ ...prev, name: "" }));
+          setData({ ...data, name: e.target.value });
+        }}
+        isInvalid={Boolean(errors.name)}
+        errorMessage={errors.name}
       />
       <Input
         isRequired
@@ -47,7 +73,12 @@ export default function SignUp() {
         placeholder="Ingrese su correo electrónico"
         type="email"
         value={data.email}
-        onChange={(e) => setData({ ...data, email: e.target.value })}
+        onChange={(e) => {
+          setErrors((prev) => ({ ...prev, email: "" }));
+          setData({ ...data, email: e.target.value });
+        }}
+        isInvalid={Boolean(errors.email)}
+        errorMessage={errors.email}
       />
 
       <Input
@@ -69,12 +100,36 @@ export default function SignUp() {
           </button>
         }
         value={data.password}
-        onChange={(e) => setData({ ...data, password: e.target.value })}
+        onChange={(e) => {
+          setErrors((prev) => ({ ...prev, password: "" }));
+          setData({ ...data, password: e.target.value });
+        }}
+        isInvalid={Boolean(errors.password)}
+        errorMessage={errors.password}
       />
 
       <div className="flex gap-4 flex-col">
-        <Checkbox isRequired>Acepto los términos y condiciones</Checkbox>
-        <Button fullWidth color="primary" type="submit">
+        <Checkbox
+          isRequired
+          isSelected={isSelected}
+          onValueChange={setIsSelected}
+        >
+          Acepto los términos y condiciones
+        </Checkbox>
+        <Button
+          fullWidth
+          color="primary"
+          type="submit"
+          isDisabled={
+            !data.name ||
+            !data.email ||
+            !data.password ||
+            !isSelected ||
+            Boolean(errors.name) ||
+            Boolean(errors.email) ||
+            Boolean(errors.password)
+          }
+        >
           Registrar
         </Button>
       </div>

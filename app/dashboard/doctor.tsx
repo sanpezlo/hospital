@@ -13,6 +13,12 @@ export default function Doctor() {
     centerId: "",
   });
 
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    centerId: "",
+  });
+
   const { data: centers, isLoading } = useSWR<Center[]>(
     "/api/center",
     fetcher()
@@ -26,13 +32,28 @@ export default function Doctor() {
       body: JSON.stringify(data),
     });
 
+    const body = await response.json();
+
     if (response.ok) {
-      alert("Doctor creado correctamente");
       setData({
         name: "",
         email: "",
         centerId: "",
       });
+    } else if (response.status === 400) {
+      if (body.error.error) {
+        Object.keys(body.error.error).forEach((key) => {
+          if (key === "_errors") return;
+          setErrors((prev) => ({
+            ...prev,
+            [key]: body.error.error[key]._errors[0],
+          }));
+        });
+      } else {
+        setErrors((prev) => ({ ...prev, email: body.error.message }));
+      }
+    } else {
+      console.log({ response, body });
     }
   };
 
@@ -44,7 +65,12 @@ export default function Doctor() {
         placeholder="Ingrese su nombre"
         type="text"
         value={data.name}
-        onChange={(e) => setData({ ...data, name: e.target.value })}
+        onChange={(e) => {
+          setErrors((prev) => ({ ...prev, name: "" }));
+          setData({ ...data, name: e.target.value });
+        }}
+        isInvalid={Boolean(errors.name)}
+        errorMessage={errors.name}
       />
       <Input
         isRequired
@@ -52,7 +78,12 @@ export default function Doctor() {
         placeholder="Ingrese su correo electrónico"
         type="email"
         value={data.email}
-        onChange={(e) => setData({ ...data, email: e.target.value })}
+        onChange={(e) => {
+          setErrors((prev) => ({ ...prev, email: "" }));
+          setData({ ...data, email: e.target.value });
+        }}
+        isInvalid={Boolean(errors.email)}
+        errorMessage={errors.email}
       />
 
       <Select
@@ -61,10 +92,14 @@ export default function Doctor() {
         placeholder="Seleccione un centro"
         selectedKeys={new Set(data.centerId ? [data.centerId] : [])}
         onSelectionChange={(value) => {
+          setErrors((prev) => ({ ...prev, centerId: "" }));
           if (value !== "all")
             setData({ ...data, centerId: value.values().next().value });
         }}
-        disabled={isLoading || centers?.length === 0}
+        isLoading={isLoading}
+        isDisabled={(centers || []).length === 0}
+        isInvalid={Boolean(errors.centerId)}
+        errorMessage={errors.centerId}
       >
         {(centers || []).map((center) => (
           <SelectItem key={center.id} value={center.name}>
@@ -74,7 +109,19 @@ export default function Doctor() {
       </Select>
 
       <div className="flex gap-2 justify-end">
-        <Button fullWidth color="primary" type="submit">
+        <Button
+          fullWidth
+          color="primary"
+          type="submit"
+          isDisabled={
+            !data.name ||
+            !data.email ||
+            !data.centerId ||
+            Boolean(errors.name) ||
+            Boolean(errors.email) ||
+            Boolean(errors.centerId)
+          }
+        >
           Crear Doctor
         </Button>
       </div>

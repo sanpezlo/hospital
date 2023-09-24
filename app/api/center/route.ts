@@ -1,68 +1,39 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { CreateCenterSchema } from "@/types/center";
+import { errorHandler } from "@/lib/error-hanlder";
+import { BadRequest } from "http-errors";
 
 export async function GET(request: NextRequest) {
-  try {
+  return errorHandler(async () => {
     const centers = await prisma.center.findMany();
     return NextResponse.json(centers);
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    }
-    return NextResponse.error();
-  }
+  });
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const { name, address, city, phone, email } = await request.json();
+  return errorHandler(async () => {
+    const body = await request.json();
 
-    // TODO: zod
+    const createCenter = CreateCenterSchema.parse(body);
 
     const exist = await prisma.center.findUnique({
       where: {
-        email,
+        name: createCenter.name,
       },
     });
 
-    if (exist)
-      return NextResponse.json(
-        {
-          error: "Email already exist",
-        },
-        {
-          status: 400,
-        }
-      );
+    if (exist) throw new BadRequest("El nombre del centro de salud ya existe");
 
     const center = await prisma.center.create({
       data: {
-        name,
-        address,
-        city,
-        phone,
-        email,
+        name: createCenter.name,
+        address: createCenter.address,
+        city: createCenter.city,
+        phone: createCenter.phone,
+        email: createCenter.email,
       },
     });
     return NextResponse.json(center);
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    }
-    return NextResponse.error();
-  }
+  });
 }

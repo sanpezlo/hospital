@@ -5,7 +5,11 @@ import { Card, CardHeader, CardBody } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import SignIn from "@/app/auth/signin/signin";
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const session = await getServerSession(authOptions);
   if (session) return redirect("/");
 
@@ -19,7 +23,7 @@ export default async function SignInPage() {
         </CardHeader>
         <Divider />
         <CardBody className="overflow-hidden">
-          <SignIn />
+          <SignIn isError={Boolean(searchParams.error)} />
         </CardBody>
       </Card>
     </div>

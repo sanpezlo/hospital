@@ -1,74 +1,45 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcrypt";
+import { CreateAdminSchema } from "@/types/user";
+import { errorHandler } from "@/lib/error-hanlder";
+import { BadRequest } from "http-errors";
 
 export async function GET(request: NextRequest) {
-  try {
+  return errorHandler(async () => {
     const accounts = await prisma.user.findMany({
       where: {
         role: "ADMIN",
       },
     });
     return NextResponse.json(accounts);
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    }
-    return NextResponse.error();
-  }
+  });
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const { name, email } = await request.json();
+  return errorHandler(async () => {
+    const body = await request.json();
 
-    // TODO: zod
+    const createAdmin = CreateAdminSchema.parse(body);
 
     const exist = await prisma.user.findUnique({
       where: {
-        email,
+        email: createAdmin.email,
       },
     });
 
-    if (exist)
-      return NextResponse.json(
-        {
-          error: "Email already exist",
-        },
-        {
-          status: 400,
-        }
-      );
+    if (exist) throw new BadRequest("El correo electrónico ya existe");
 
     const hashedPassword = await hash("admin", 10);
 
     const admin = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: createAdmin.name,
+        email: createAdmin.email,
         hashedPassword,
         role: "ADMIN",
       },
     });
     return NextResponse.json(admin);
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    }
-    return NextResponse.error();
-  }
+  });
 }

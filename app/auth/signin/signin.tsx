@@ -5,11 +5,12 @@ import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { signIn } from "next-auth/react";
 
-export default function SignIn() {
+export default function SignIn({ isError = false }: { isError?: boolean }) {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+  const [error, setError] = useState(isError);
   const [isVisible, setIsVisible] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,7 +30,12 @@ export default function SignIn() {
         placeholder="Ingrese su correo electrónico"
         type="email"
         value={data.email}
-        onChange={(e) => setData({ ...data, email: e.target.value })}
+        onChange={(e) => {
+          setError(false);
+          setData({ ...data, email: e.target.value });
+        }}
+        isInvalid={error}
+        errorMessage={error && "Correo electrónico o contraseña incorrectos"}
       />
 
       <Input
@@ -51,11 +57,20 @@ export default function SignIn() {
           </button>
         }
         value={data.password}
-        onChange={(e) => setData({ ...data, password: e.target.value })}
+        onChange={(e) => {
+          setError(false);
+          setData({ ...data, password: e.target.value });
+        }}
+        isInvalid={error}
       />
 
       <div className="flex gap-2 justify-end">
-        <Button fullWidth color="primary" type="submit">
+        <Button
+          fullWidth
+          color="primary"
+          type="submit"
+          isDisabled={!data.email || !data.password || Boolean(error)}
+        >
           Iniciar sesión
         </Button>
       </div>

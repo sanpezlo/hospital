@@ -27,7 +27,7 @@ export default function RootLayout({
           </main>
           <div
             aria-hidden="true"
-            className="fixed hidden dark:md:block dark:opacity-70 -bottom-[40%] -left-[20%] z-0"
+            className="fixed  dark:md:block dark:opacity-70 -bottom-[40%] -left-[20%] z-0"
           >
             <Image
               removeWrapper
@@ -37,7 +37,7 @@ export default function RootLayout({
           </div>
           <div
             aria-hidden="true"
-            className="fixed hidden dark:md:block dark:opacity-70 -top-[80%] -right-[60%] 2xl:-top-[60%] 2xl:-right-[45%] z-0 rotate-12"
+            className="fixed  dark:md:block dark:opacity-70 -top-[80%] -right-[60%] 2xl:-top-[60%] 2xl:-right-[45%] z-0 rotate-12"
           >
             <Image
               removeWrapper

@@ -75,6 +75,6 @@ model Center {
   address String
   city    String
   phone   String
-  email   String @unique
+  email   String
   users   User[]
 }
