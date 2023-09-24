@@ -22,27 +22,38 @@ import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 
-// import SignOut from "@/app/auth/signout/signout";
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  console.log(isMenuOpen);
   const { data: session, status } = useSession();
 
-  const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
+  const unauthenticatedItems = [
+    {
+      title: "Iniciar sesión",
+      link: "/auth/signin",
+    },
+    {
+      title: "Registrarse",
+      link: "/auth/signup",
+    },
+  ];
+
+  const authenticatedItems = [];
+
+  const adminItems = [
+    {
+      title: "Panel de control",
+      link: "/dashboard",
+    },
   ];
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen} shouldHideOnScroll isBordered>
+    <Navbar
+      onMenuOpenChange={setIsMenuOpen}
+      isMenuOpen={isMenuOpen}
+      shouldHideOnScroll
+      isBordered
+    >
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Cerrar menu" : "Abrir menu"}
@@ -66,15 +77,14 @@ export default function Header() {
           <Link color="foreground">Integrations</Link>
         </NavbarItem> */}
 
-        {session?.user.role === "ADMIN" ? (
-          <NavbarItem>
-            <Link as={NextLink} color="foreground" href="/dashboard">
-              Panel de control
-            </Link>
-          </NavbarItem>
-        ) : (
-          <></>
-        )}
+        {session?.user.role === "ADMIN" &&
+          adminItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link as={NextLink} color="foreground" href={item.link}>
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
       </NavbarContent>
 
       <NavbarContent justify="end">
@@ -82,15 +92,13 @@ export default function Header() {
           <ThemeSwitch />
         </NavbarItem>
 
-        {status === "loading" ? (
+        {status === "loading" && (
           <NavbarItem>
             <Spinner />
           </NavbarItem>
-        ) : (
-          <></>
         )}
 
-        {status === "authenticated" ? (
+        {status === "authenticated" && (
           <NavbarItem>
             <Avatar
               src="https://i.pravatar.cc/150"
@@ -98,51 +106,60 @@ export default function Header() {
               color="primary"
             />
           </NavbarItem>
-        ) : (
-          <></>
         )}
 
-        {status === "unauthenticated" ? (
-          <>
-            <NavbarItem className="hidden lg:flex">
-              <Link as={NextLink} href="/auth/signin">
-                Iniciar sesión
-              </Link>
+        {status === "unauthenticated" &&
+          unauthenticatedItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              {index !== unauthenticatedItems.length - 1 ? (
+                <Link as={NextLink} href={item.link}>
+                  {item.title}
+                </Link>
+              ) : (
+                <Button
+                  as={NextLink}
+                  color="primary"
+                  href={item.link}
+                  variant="flat"
+                >
+                  {item.title}
+                </Button>
+              )}
             </NavbarItem>
-            <NavbarItem>
-              <Button
-                as={NextLink}
-                color="primary"
-                href="/auth/signup"
-                variant="flat"
-              >
-                Registrarse
-              </Button>
-            </NavbarItem>
-          </>
-        ) : (
-          <></>
-        )}
+          ))}
       </NavbarContent>
       <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              color={
-                index === 2
-                  ? "primary"
-                  : index === menuItems.length - 1
-                  ? "danger"
-                  : "foreground"
-              }
-              className="w-full"
-              href="#"
-              size="lg"
-            >
-              {item}
-            </Link>
-          </NavbarMenuItem>
-        ))}
+        {session?.user.role === "ADMIN" &&
+          adminItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link
+                as={NextLink}
+                color="foreground"
+                className="w-full"
+                href={item.link}
+                size="lg"
+                onPress={() => setIsMenuOpen(false)}
+              >
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {status === "unauthenticated" &&
+          unauthenticatedItems.map((item, index) => (
+            <NavbarMenuItem key={`${item.title}-${index}`}>
+              <Link
+                as={NextLink}
+                color="foreground"
+                className="w-full"
+                href={item.link}
+                size="lg"
+                onPress={() => setIsMenuOpen(false)}
+              >
+                {item.title}
+              </Link>
+            </NavbarMenuItem>
+          ))}
       </NavbarMenu>
     </Navbar>
   );

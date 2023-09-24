@@ -14,7 +14,7 @@ export default async function SignUpPage() {
       <Card className="sm:mx-auto sm:w-full sm:max-w-sm">
         <CardHeader className="flex">
           <div className="flex justify-center items-center w-full">
-            <h1 className="text-3xl m-auto">Registrate</h1>
+            <h1 className="text-3xl m-auto">Regístrate</h1>
           </div>
         </CardHeader>
         <Divider />
