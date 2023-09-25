@@ -24,7 +24,6 @@ import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  console.log(isMenuOpen);
   const { data: session, status } = useSession();
 
   const unauthenticatedItems = [
