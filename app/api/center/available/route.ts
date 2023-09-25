@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { errorHandler } from "@/lib/error-hanlder";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   return errorHandler(async () => {
     const centers = await prisma.center.findMany({
