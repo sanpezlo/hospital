@@ -85,8 +85,8 @@ export default function Center() {
         />
         <Input
           isRequired
-          label="Direccion"
-          placeholder="Ingrese la direccion"
+          label="Dirección"
+          placeholder="Ingrese la dirección"
           type="text"
           value={data.address}
           onChange={(e) => {
@@ -112,8 +112,8 @@ export default function Center() {
         <Input
           isRequired
           type="text"
-          label="Telefono"
-          placeholder="Ingrese el telefono"
+          label="Teléfono"
+          placeholder="Ingrese el teléfono"
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">+57</span>
