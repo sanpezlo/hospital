@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,15 +14,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -47,11 +43,10 @@ model User {
   role            Role      @default(PATIENT)
   passwordChanged DateTime?
   image           String?
+  centerId        String?
   accounts        Account[]
   sessions        Session[]
-
-  center   Center? @relation(fields: [centerId], references: [id])
-  centerId String?
+  center          Center?   @relation(fields: [centerId], references: [id])
 }
 
 model VerificationToken {
@@ -62,20 +57,35 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Center {
+  id      String @id @default(cuid())
+  name    String @unique
+  address String
+  phone   String
+  email   String
+  cityId  String
+  city    City   @relation(fields: [cityId], references: [id])
+  users   User[]
+}
+
+model Department {
+  id     String @id @default(cuid())
+  name   String @unique
+  cities City[]
+}
+
+model City {
+  id           String     @id @default(cuid())
+  name         String     @unique
+  departmentId String
+  Center       Center[]
+  department   Department @relation(fields: [departmentId], references: [id])
+}
+
 enum Role {
   ADMIN
   DIRECTOR
   DOCTOR
   SECRETARY
   PATIENT
-}
-
-model Center {
-  id      String @id @default(cuid())
-  name    String @unique
-  address String
-  city    String
-  phone   String
-  email   String
-  users   User[]
 }
