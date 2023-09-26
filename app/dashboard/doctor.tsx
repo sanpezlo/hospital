@@ -13,11 +13,11 @@ import { useState } from "react";
 import useSWR from "swr";
 import Sure from "@/app/dashboard/sure";
 
-export default function Doctor() {
+export default function Doctor({ centerId = "" }: { centerId?: string }) {
   const [data, setData] = useState({
     name: "",
     email: "",
-    centerId: "",
+    centerId: centerId,
   });
 
   const [errors, setErrors] = useState({
@@ -26,8 +26,13 @@ export default function Doctor() {
     centerId: "",
   });
 
-  const { data: centers, isLoading } = useSWR<Center[]>(
-    "/api/center",
+  const { data: centers, isLoading: isLoadingCenters } = useSWR<Center[]>(
+    !centerId ? "/api/center" : null,
+    fetcher()
+  );
+
+  const { data: center, isLoading: isLoadingCenter } = useSWR<Center>(
+    centerId ? `/api/center/${centerId}` : null,
     fetcher()
   );
 
@@ -111,16 +116,18 @@ export default function Doctor() {
             if (value !== "all")
               setData({ ...data, centerId: value.values().next().value });
           }}
-          isLoading={isLoading}
-          isDisabled={(centers || []).length === 0}
+          isLoading={isLoadingCenter || isLoadingCenters}
+          isDisabled={Boolean(data.centerId) || (centers || []).length === 0}
           isInvalid={Boolean(errors.centerId)}
           errorMessage={errors.centerId}
         >
-          {(centers || []).map((center) => (
-            <SelectItem key={center.id} value={center.name}>
-              {center.name}
-            </SelectItem>
-          ))}
+          {((centerId ? (!center ? [] : [center]) : centers) || []).map(
+            (center) => (
+              <SelectItem key={center.id} value={center.name}>
+                {center.name}
+              </SelectItem>
+            )
+          )}
         </Select>
 
         <div className="flex gap-2 justify-end">
@@ -152,7 +159,9 @@ export default function Doctor() {
           "Correo electrónico": data.email,
           Contraseña: "doctor",
           "Nombre del centro":
-            centers?.find((center) => center.id === data.centerId)?.name || "",
+            (centerId ? (!center ? [] : [center]) : centers)?.find(
+              (center) => center.id === data.centerId
+            )?.name || "",
         }}
       />
     </>

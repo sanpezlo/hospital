@@ -17,12 +17,19 @@ import {
   VisuallyHidden,
   useSwitch,
   SwitchProps,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export default function Header() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
 
@@ -37,9 +44,21 @@ export default function Header() {
     },
   ];
 
-  const authenticatedItems = [];
+  const authenticatedItems = [
+    {
+      title: "Cerrar sesión",
+      link: "/auth/signout",
+    },
+  ];
 
   const adminItems = [
+    {
+      title: "Panel de control",
+      link: "/dashboard",
+    },
+  ];
+
+  const directorItems = [
     {
       title: "Panel de control",
       link: "/dashboard",
@@ -66,18 +85,17 @@ export default function Header() {
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        {/* <NavbarItem>
-          <Link color="foreground">Features</Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link aria-current="page">Customers</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground">Integrations</Link>
-        </NavbarItem> */}
-
         {session?.user.role === "ADMIN" &&
           adminItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link as={NextLink} color="foreground" href={item.link}>
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {session?.user.role === "DIRECTOR" &&
+          directorItems.map((item, index) => (
             <NavbarItem key={`${item.title}-${index}`}>
               <Link as={NextLink} color="foreground" href={item.link}>
                 {item.title}
@@ -99,11 +117,53 @@ export default function Header() {
 
         {status === "authenticated" && (
           <NavbarItem>
-            <Avatar
-              src="https://i.pravatar.cc/150"
-              isBordered
-              color="primary"
-            />
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Avatar
+                  name={session?.user.name || ""}
+                  isBordered
+                  as="button"
+                  color={
+                    session?.user.role === "ADMIN"
+                      ? "danger"
+                      : session?.user.role === "DIRECTOR"
+                      ? "success"
+                      : session?.user.role === "DOCTOR"
+                      ? "primary"
+                      : session?.user.role === "SECRETARY"
+                      ? "warning"
+                      : "default"
+                  }
+                />
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Acciones de usuario"
+                variant="flat"
+                onAction={(key) => {
+                  if (
+                    key ===
+                    authenticatedItems[authenticatedItems.length - 1].link
+                  )
+                    signOut();
+
+                  router.push(`${key}`);
+                }}
+              >
+                {authenticatedItems.map((item, index) =>
+                  authenticatedItems.length - 1 !== index ? (
+                    <DropdownItem key={item.link}>{item.title}</DropdownItem>
+                  ) : (
+                    <DropdownItem
+                      key={item.link}
+                      color="danger"
+                      className="text-danger"
+                    >
+                      {item.title}
+                    </DropdownItem>
+                  )
+                )}
+              </DropdownMenu>
+            </Dropdown>
           </NavbarItem>
         )}
 
@@ -130,6 +190,22 @@ export default function Header() {
       <NavbarMenu>
         {session?.user.role === "ADMIN" &&
           adminItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link
+                as={NextLink}
+                color="foreground"
+                className="w-full"
+                href={item.link}
+                size="lg"
+                onPress={() => setIsMenuOpen(false)}
+              >
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {session?.user.role === "DIRECTOR" &&
+          directorItems.map((item, index) => (
             <NavbarItem key={`${item.title}-${index}`}>
               <Link
                 as={NextLink}

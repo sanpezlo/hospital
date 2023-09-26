@@ -61,6 +61,7 @@ export const authOptions: NextAuthOptions = {
           id: token.sub,
           passwordChanged: token.passwordChanged,
           role: token.role,
+          centerId: token.centerId,
         },
       };
     },
@@ -72,6 +73,7 @@ export const authOptions: NextAuthOptions = {
           ...token,
           role: u.role,
           passwordChanged: u.passwordChanged,
+          centerId: u.centerId,
         };
       return token;
     },

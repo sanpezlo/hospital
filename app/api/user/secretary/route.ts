@@ -3,7 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { CreateUserSchema } from "@/types/user";
 import { errorHandler } from "@/lib/error-hanlder";
-import { BadRequest } from "http-errors";
+import { BadRequest, Unauthorized, Forbidden } from "http-errors";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: NextRequest) {
   return errorHandler(async () => {
@@ -18,7 +20,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   return errorHandler(async () => {
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Unauthorized("No autorizado");
+    if (session.user.role !== "ADMIN" && session.user.role !== "DIRECTOR")
+      throw new Forbidden("No autorizado");
+
     const body = await request.json();
+
+    if (session.user.role === "DIRECTOR") body.centerId = session.user.centerId;
 
     const createUser = CreateUserSchema.parse(body);
 

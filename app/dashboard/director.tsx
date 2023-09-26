@@ -26,10 +26,13 @@ export default function Director() {
     centerId: "",
   });
 
-  const { data: centersAvailable, isLoading } = useSWR<Center[]>(
-    "/api/center/available",
-    fetcher()
-  );
+  const {
+    data: centersAvailable,
+    isLoading,
+    error,
+  } = useSWR<Center[]>("/api/center/available", fetcher(), {
+    shouldRetryOnError: false,
+  });
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
