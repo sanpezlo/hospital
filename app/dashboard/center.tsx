@@ -94,7 +94,11 @@ export default function Center() {
         onSelectionChange={(value) => {
           setErrors((prev) => ({ ...prev, departmentId: "" }));
           if (value !== "all")
-            setData({ ...data, departmentId: value.values().next().value });
+            setData({
+              ...data,
+              departmentId: value.values().next().value,
+              cityId: "",
+            });
         }}
         isLoading={isLoadingDepartments}
         isDisabled={(departments || []).length === 0}
