@@ -1,13 +1,17 @@
 "use client";
 
-import { Input, Button } from "@nextui-org/react";
+import { fetcher } from "@/lib/fetcher";
+import { Input, Button, Select, SelectItem } from "@nextui-org/react";
+import { City, Department } from "@prisma/client";
 import { useState } from "react";
+import useSWR from "swr";
 
 export default function Center() {
   const [data, setData] = useState({
     name: "",
     address: "",
-    city: "",
+    departmentId: "",
+    cityId: "",
     phone: "",
     email: "",
   });
@@ -15,10 +19,20 @@ export default function Center() {
   const [errors, setErrors] = useState({
     name: "",
     address: "",
-    city: "",
+    departmentId: "",
+    cityId: "",
     phone: "",
     email: "",
   });
+
+  const { data: departments, isLoading: isLoadingDepartments } = useSWR<
+    Department[]
+  >("/api/department", fetcher());
+
+  const { data: cities, isLoading: isLoadingCities } = useSWR<City[]>(
+    data.departmentId ? `/api/city/department/${data.departmentId}` : null,
+    fetcher()
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +48,8 @@ export default function Center() {
       setData({
         name: "",
         address: "",
-        city: "",
+        departmentId: "",
+        cityId: "",
         phone: "",
         email: "",
       });
@@ -70,6 +85,59 @@ export default function Center() {
         isInvalid={Boolean(errors.name)}
         errorMessage={errors.name}
       />
+
+      <Select
+        isRequired
+        label="Departamento"
+        placeholder="Seleccione un departamento"
+        selectedKeys={new Set(data.departmentId ? [data.departmentId] : [])}
+        onSelectionChange={(value) => {
+          setErrors((prev) => ({ ...prev, departmentId: "" }));
+          if (value !== "all")
+            setData({ ...data, departmentId: value.values().next().value });
+        }}
+        isLoading={isLoadingDepartments}
+        isDisabled={(departments || []).length === 0}
+        errorMessage={
+          !isLoadingDepartments && (departments || []).length === 0
+            ? "No hay departamentos registrados"
+            : errors.departmentId
+        }
+        isInvalid={Boolean(errors.departmentId)}
+      >
+        {(departments || []).map((department) => (
+          <SelectItem key={department.id} value={department.name}>
+            {department.name}
+          </SelectItem>
+        ))}
+      </Select>
+
+      <Select
+        isRequired
+        label="Ciudad"
+        placeholder="Seleccione una ciudad"
+        selectedKeys={new Set(data.cityId ? [data.cityId] : [])}
+        onSelectionChange={(value) => {
+          setErrors((prev) => ({ ...prev, cityId: "" }));
+          if (value !== "all")
+            setData({ ...data, cityId: value.values().next().value });
+        }}
+        isLoading={isLoadingCities}
+        isDisabled={(cities || []).length === 0}
+        errorMessage={
+          !isLoadingCities && (cities || []).length === 0
+            ? "No hay ciudades registradas"
+            : errors.departmentId
+        }
+        isInvalid={Boolean(errors.departmentId)}
+      >
+        {(cities || []).map((city) => (
+          <SelectItem key={city.id} value={city.name}>
+            {city.name}
+          </SelectItem>
+        ))}
+      </Select>
+
       <Input
         isRequired
         label="Dirección"
@@ -83,19 +151,7 @@ export default function Center() {
         isInvalid={Boolean(errors.address)}
         errorMessage={errors.address}
       />
-      <Input
-        isRequired
-        label="Ciudad"
-        placeholder="Ingrese la ciudad"
-        type="text"
-        value={data.city}
-        onChange={(e) => {
-          setErrors((prev) => ({ ...prev, city: "" }));
-          setData({ ...data, city: e.target.value });
-        }}
-        isInvalid={Boolean(errors.city)}
-        errorMessage={errors.city}
-      />
+
       <Input
         isRequired
         type="text"
@@ -137,12 +193,14 @@ export default function Center() {
           isDisabled={
             !data.name ||
             !data.address ||
-            !data.city ||
+            !data.departmentId ||
+            !data.cityId ||
             !data.phone ||
             !data.email ||
             Boolean(errors.name) ||
             Boolean(errors.address) ||
-            Boolean(errors.city) ||
+            Boolean(errors.departmentId) ||
+            Boolean(errors.cityId) ||
             Boolean(errors.phone) ||
             Boolean(errors.email)
           }

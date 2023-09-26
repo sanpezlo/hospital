@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CreateCenterSchema } from "@/types/center";
+import { CreateCitySchema } from "@/types/city";
 import { errorHandler } from "@/lib/error-hanlder";
 import { BadRequest, Unauthorized, Forbidden } from "http-errors";
 import { getServerSession } from "next-auth";
@@ -8,8 +8,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: NextRequest) {
   return errorHandler(async () => {
-    const centers = await prisma.center.findMany();
-    return NextResponse.json(centers);
+    const cities = await prisma.city.findMany();
+    return NextResponse.json(cities);
   });
 }
 
@@ -21,25 +21,25 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const createCenter = CreateCenterSchema.parse(body);
+    const createCity = CreateCitySchema.parse(body);
 
-    const exist = await prisma.center.findUnique({
+    const exist = await prisma.city.findUnique({
       where: {
-        name: createCenter.name,
+        name_departmentId: {
+          name: createCity.name,
+          departmentId: createCity.departmentId,
+        },
       },
     });
 
-    if (exist) throw new BadRequest("El nombre del centro de salud ya existe");
+    if (exist) throw new BadRequest("El nombre de la ciudad ya existe");
 
-    const center = await prisma.center.create({
+    const city = await prisma.city.create({
       data: {
-        name: createCenter.name,
-        address: createCenter.address,
-        cityId: createCenter.cityId,
-        phone: createCenter.phone,
-        email: createCenter.email,
+        name: createCity.name,
+        departmentId: createCity.departmentId,
       },
     });
-    return NextResponse.json(center);
+    return NextResponse.json(city);
   });
 }

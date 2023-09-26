@@ -76,10 +76,12 @@ model Department {
 
 model City {
   id           String     @id @default(cuid())
-  name         String     @unique
+  name         String
   departmentId String
   Center       Center[]
   department   Department @relation(fields: [departmentId], references: [id])
+
+  @@unique([name, departmentId])
 }
 
 enum Role {

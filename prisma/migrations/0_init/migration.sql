@@ -102,7 +102,7 @@ CREATE UNIQUE INDEX "Center_name_key" ON "Center"("name");
 CREATE UNIQUE INDEX "Department_name_key" ON "Department"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "City_name_key" ON "City"("name");
+CREATE UNIQUE INDEX "City_name_departmentId_key" ON "City"("name", "departmentId");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

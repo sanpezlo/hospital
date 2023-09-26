@@ -5,7 +5,20 @@ import Admin from "@/app/dashboard/admin";
 import Director from "@/app/dashboard/director";
 import Doctor from "@/app/dashboard/doctor";
 import Secretary from "@/app/dashboard/secretary";
-import { Role } from "@prisma/client";
+import { type Role } from "@prisma/client";
+
+const adminTabs = [
+  {
+    role: "ADMIN",
+    title: "Admin",
+    component: <Admin />,
+  },
+  {
+    role: "DIRECTOR",
+    title: "Director",
+    component: <Director />,
+  },
+];
 
 export default function Tabs({
   role,
@@ -16,19 +29,19 @@ export default function Tabs({
 }) {
   return (
     <NextuiTabs fullWidth size="md" aria-label="Tabs form">
-      {role === "ADMIN" && (
-        <>
-          <Tab key="ADMIN" title="Admin">
-            <Admin />
-          </Tab>
-          <Tab key="DIRECTOR" title="Director">
-            <Director />
-          </Tab>
-        </>
-      )}
-      <Tab key="DOCTOR" title="Doctor">
+      {role === "ADMIN" &&
+        adminTabs.map((tab) => {
+          return (
+            <Tab key={tab.role} title={tab.title}>
+              {tab.component}
+            </Tab>
+          );
+        })}
+
+      <Tab key="DOCTOR" title="doctor">
         <Doctor centerId={centerId} />
       </Tab>
+
       <Tab key="SECRETARY" title="Secretaria">
         <Secretary centerId={centerId} />
       </Tab>

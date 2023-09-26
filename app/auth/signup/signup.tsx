@@ -1,9 +1,10 @@
 "use client";
 
-import { Input, Button, Checkbox } from "@nextui-org/react";
+import { Input, Button, Checkbox, Link } from "@nextui-org/react";
 import { useState } from "react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { signIn } from "next-auth/react";
+import NextLink from "next/link";
 
 export default function SignUp() {
   const [data, setData] = useState({
@@ -107,6 +108,13 @@ export default function SignUp() {
         isInvalid={Boolean(errors.password)}
         errorMessage={errors.password}
       />
+
+      <p className="text-center text-small">
+        ¿Ya tienes una cuenta?{" "}
+        <Link as={NextLink} size="sm" href="/auth/signin">
+          Inicia sesión
+        </Link>
+      </p>
 
       <div className="flex gap-4 flex-col">
         <Checkbox
