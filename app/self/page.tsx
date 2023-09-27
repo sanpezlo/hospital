@@ -41,7 +41,7 @@ export default async function SelfPage() {
       <div className="my-6 gap-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         <div>
           <Card className="max-w-full">
-            <CardHeader className="flex gap-3 justify-between">
+            <CardHeader className="flex gap-4 justify-between">
               <h2 className="text-md">Información básica</h2>
               <Tooltip content="Editar">
                 <Button isIconOnly aria-label="Editar" variant="flat">
@@ -69,8 +69,6 @@ export default async function SelfPage() {
           </Card>
         </div>
       </div>
-
-      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
     </>
   );
 }

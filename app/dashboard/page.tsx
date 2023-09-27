@@ -24,8 +24,8 @@ export default async function DashboardPage() {
           <div className="my-6 gap-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
             <div>
               <Card className="max-w-full">
-                <CardHeader className="flex gap-3">
-                  <div className="flex flex-col gap-3">
+                <CardHeader className="flex gap-4">
+                  <div className="flex flex-col gap-4">
                     <h2 className="text-md">Crear departamentos</h2>
                   </div>
                 </CardHeader>
@@ -38,8 +38,8 @@ export default async function DashboardPage() {
 
             <div>
               <Card className="max-w-full">
-                <CardHeader className="flex gap-3">
-                  <div className="flex flex-col gap-3">
+                <CardHeader className="flex gap-4">
+                  <div className="flex flex-col gap-4">
                     <h2 className="text-md">Crear ciudades</h2>
                   </div>
                 </CardHeader>
@@ -60,8 +60,8 @@ export default async function DashboardPage() {
           <>
             <div>
               <Card className="max-w-full">
-                <CardHeader className="flex gap-3">
-                  <div className="flex flex-col gap-3">
+                <CardHeader className="flex gap-4">
+                  <div className="flex flex-col gap-4">
                     <h2 className="text-md">Crear centros</h2>
                   </div>
                 </CardHeader>
@@ -75,8 +75,8 @@ export default async function DashboardPage() {
         )}
         <div>
           <Card className="max-w-full">
-            <CardHeader className="flex gap-3">
-              <div className="flex flex-col gap-3">
+            <CardHeader className="flex gap-4">
+              <div className="flex flex-col gap-4">
                 <h2 className="text-md">Crear cuentas</h2>
                 <div className="text-small text-default-500">
                   Cada cuenta se creara con una contraseña por defecto:

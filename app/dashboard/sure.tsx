@@ -11,14 +11,12 @@ import {
 
 export default function Sure({
   isOpen,
-  onOpen,
   onOpenChange,
   onPress,
   entity,
   list,
 }: {
   isOpen: boolean;
-  onOpen: () => void;
   onOpenChange: () => void;
   onPress: () => void;
   entity: string;
@@ -38,7 +36,7 @@ export default function Sure({
               </h1>
             </ModalHeader>
             <ModalBody>
-              <p className="flex flex-col gap-3">
+              <p className="flex flex-col gap-4">
                 La cuenta de {entity.toLocaleLowerCase()} se creará con los
                 siguientes datos:
                 <ul className="list-disc list-inside">
