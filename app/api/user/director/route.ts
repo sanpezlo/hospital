@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
         email: createUser.email,
         hashedPassword,
         role: "DIRECTOR",
+        specialization: createUser.specialization,
         center: {
           connect: {
             id: createUser.centerId,

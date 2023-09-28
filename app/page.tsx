@@ -19,9 +19,7 @@ export default function HomePage() {
           y eficaz.
         </p>
       </div>
-      <div>
-        <RequestMedicalAppointment />
-      </div>
+      <div>{/* <RequestMedicalAppointment /> */}</div>
     </div>
   );
 }

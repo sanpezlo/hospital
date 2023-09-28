@@ -98,9 +98,11 @@ export default function Center() {
         isLoading={isLoadingDepartments}
         isDisabled={(departments || []).length === 0}
         errorMessage={
-          !isLoadingDepartments && (departments || []).length === 0
-            ? "No hay departamentos registrados"
-            : errors.department
+          errors.department
+            ? errors.department
+            : !isLoadingDepartments &&
+              (departments || []).length === 0 &&
+              "No hay departamentos registrados"
         }
         isInvalid={Boolean(errors.department)}
       >
@@ -129,13 +131,14 @@ export default function Center() {
           ).length === 0
         }
         errorMessage={
-          Boolean(data.department) &&
-          (
-            departments?.find(({ name }) => name === data.department)?.cities ||
-            []
-          ).length === 0
-            ? "No hay ciudades registradas"
-            : errors.department
+          errors.department
+            ? errors.department
+            : Boolean(data.department) &&
+              (
+                departments?.find(({ name }) => name === data.department)
+                  ?.cities || []
+              ).length === 0 &&
+              "No hay ciudades registradas"
         }
         isInvalid={Boolean(errors.city)}
       >

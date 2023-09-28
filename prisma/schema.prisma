@@ -44,6 +44,7 @@ model User {
   passwordChanged DateTime?
   image           String?
   centerId        String?
+  specialization  String?
   accounts        Account[]
   sessions        Session[]
   center          Center?   @relation(fields: [centerId], references: [id])

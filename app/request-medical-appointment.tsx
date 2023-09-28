@@ -84,9 +84,11 @@ export default function RequestMedicalAppointment() {
             isLoading={isLoading}
             isDisabled={(centers || []).length === 0}
             errorMessage={
-              !isLoading && (centers || []).length === 0
-                ? "No hay centros disponibles"
-                : errors.centerId
+              errors.centerId
+                ? errors.centerId
+                : !isLoading &&
+                  (centers || []).length === 0 &&
+                  "No hay centros disponibles"
             }
             isInvalid={Boolean(errors.centerId)}
           >

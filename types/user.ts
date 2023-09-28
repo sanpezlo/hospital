@@ -56,6 +56,11 @@ export const CreateUserSchema = CreateAdminSchema.extend({
     required_error: "El centro es requerido",
     invalid_type_error: "El centro debe ser un texto",
   }),
+  specialization: z
+    .string({
+      invalid_type_error: "La especialización debe ser un texto",
+    })
+    .optional(),
 });
 
 export type CreateUser = z.infer<typeof CreateUserSchema>;

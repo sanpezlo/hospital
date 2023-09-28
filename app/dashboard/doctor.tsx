@@ -17,12 +17,14 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
   const [data, setData] = useState({
     name: "",
     email: "",
+    specialization: "Ninguna",
     centerId: centerId,
   });
 
   const [errors, setErrors] = useState({
     name: "",
     email: "",
+    specialization: "",
     centerId: "",
   });
 
@@ -35,6 +37,10 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
     centerId ? `/api/center/${centerId}` : null,
     fetcher()
   );
+
+  const { data: specializations, isLoading: isLoadingSpecialization } = useSWR<
+    string[]
+  >("/api/specialization", fetcher());
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -51,6 +57,7 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
       setData({
         name: "",
         email: "",
+        specialization: "Ninguna",
         centerId: "",
       });
     } else if (response.status === 400) {
@@ -108,6 +115,42 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
 
         <Select
           isRequired
+          label="Especialización"
+          placeholder="Seleccione su especialización"
+          selectedKeys={
+            new Set(data.specialization ? [data.specialization] : [])
+          }
+          onSelectionChange={(value) => {
+            setErrors((prev) => ({ ...prev, specialization: "" }));
+            if (value !== "all") {
+              const specialization = value.values().next().value;
+              if (specialization)
+                setData({
+                  ...data,
+                  specialization: specialization,
+                });
+            }
+          }}
+          isLoading={isLoadingSpecialization}
+          isDisabled={(specializations || []).length === 0}
+          errorMessage={
+            errors.specialization
+              ? errors.specialization
+              : !isLoadingSpecialization &&
+                (specializations || []).length === 0 &&
+                "No hay especializaciónes registradas"
+          }
+          isInvalid={Boolean(errors.specialization)}
+        >
+          {(specializations || []).map((specialization) => (
+            <SelectItem key={specialization} value={specialization}>
+              {specialization}
+            </SelectItem>
+          ))}
+        </Select>
+
+        <Select
+          isRequired
           label="Centro"
           placeholder="Seleccione un centro"
           selectedKeys={new Set(data.centerId ? [data.centerId] : [])}
@@ -145,9 +188,11 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
             isDisabled={
               !data.name ||
               !data.email ||
+              !data.specialization ||
               !data.centerId ||
               Boolean(errors.name) ||
               Boolean(errors.email) ||
+              Boolean(errors.specialization) ||
               Boolean(errors.centerId)
             }
           >
@@ -163,6 +208,7 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
         list={{
           Nombre: data.name,
           "Correo electrónico": data.email,
+          Especialización: data.specialization,
           Contraseña: "doctor",
           "Nombre del centro":
             (centerId ? (!center ? [] : [center]) : centers)?.find(
