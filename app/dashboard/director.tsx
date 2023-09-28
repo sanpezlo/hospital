@@ -117,9 +117,11 @@ export default function Director() {
           isLoading={isLoading}
           isDisabled={(centersAvailable || []).length === 0}
           errorMessage={
-            !isLoading && (centersAvailable || []).length === 0
-              ? "No hay centros disponibles"
-              : errors.centerId
+            errors.centerId
+              ? errors.centerId
+              : !isLoading &&
+                (centersAvailable || []).length === 0 &&
+                "No hay centros disponibles"
           }
           isInvalid={Boolean(errors.centerId)}
         >
@@ -150,7 +152,6 @@ export default function Director() {
       </form>
       <Sure
         isOpen={isOpen}
-        onOpen={onOpen}
         onOpenChange={onOpenChange}
         onPress={handleSubmit}
         entity="Director"

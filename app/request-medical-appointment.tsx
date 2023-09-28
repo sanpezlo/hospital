@@ -173,6 +173,65 @@ export default function RequestMedicalAppointment() {
             </Select>
           </div>
 
+          <div className="flex flex-row gap-4">
+            <Select
+              className="flex-1"
+              isRequired
+              label="Día"
+              selectedKeys={new Set(data.day ? [data.day] : [])}
+              onSelectionChange={(value) => {
+                setErrors((prev) => ({ ...prev, day: "" }));
+                if (value !== "all")
+                  setData({ ...data, day: value.values().next().value });
+              }}
+              errorMessage={errors.day}
+              isInvalid={Boolean(errors.day)}
+            >
+              {Array.from(
+                {
+                  length: new Date(
+                    parseInt(data.year),
+                    parseInt(data.month),
+                    0
+                  ).getDate(),
+                },
+                (_, i) => i + 1
+              ).map((day) => (
+                <SelectItem key={day.toString()} value={day.toString()}>
+                  {day.toString()}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              className="flex-1"
+              isRequired
+              label="Día"
+              selectedKeys={new Set(data.day ? [data.day] : [])}
+              onSelectionChange={(value) => {
+                setErrors((prev) => ({ ...prev, day: "" }));
+                if (value !== "all")
+                  setData({ ...data, day: value.values().next().value });
+              }}
+              errorMessage={errors.day}
+              isInvalid={Boolean(errors.day)}
+            >
+              {Array.from(
+                {
+                  length: new Date(
+                    parseInt(data.year),
+                    parseInt(data.month),
+                    0
+                  ).getDate(),
+                },
+                (_, i) => i + 1
+              ).map((day) => (
+                <SelectItem key={day.toString()} value={day.toString()}>
+                  {day.toString()}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+
           <div className="flex gap-2 justify-end">
             <Button
               fullWidth

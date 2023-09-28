@@ -1,8 +1,8 @@
 "use client";
 
 import { fetcher } from "@/lib/fetcher";
+import { Department } from "@/types/departments";
 import { Input, Button, Select, SelectItem } from "@nextui-org/react";
-import { City, Department } from "@prisma/client";
 import { useState } from "react";
 import useSWR from "swr";
 
@@ -10,8 +10,8 @@ export default function Center() {
   const [data, setData] = useState({
     name: "",
     address: "",
-    departmentId: "",
-    cityId: "",
+    department: "",
+    city: "",
     phone: "",
     email: "",
   });
@@ -19,8 +19,8 @@ export default function Center() {
   const [errors, setErrors] = useState({
     name: "",
     address: "",
-    departmentId: "",
-    cityId: "",
+    department: "",
+    city: "",
     phone: "",
     email: "",
   });
@@ -28,11 +28,6 @@ export default function Center() {
   const { data: departments, isLoading: isLoadingDepartments } = useSWR<
     Department[]
   >("/api/department", fetcher());
-
-  const { data: cities, isLoading: isLoadingCities } = useSWR<City[]>(
-    data.departmentId ? `/api/city/department/${data.departmentId}` : null,
-    fetcher()
-  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,8 +43,8 @@ export default function Center() {
       setData({
         name: "",
         address: "",
-        departmentId: "",
-        cityId: "",
+        department: "",
+        city: "",
         phone: "",
         email: "",
       });
@@ -90,14 +85,14 @@ export default function Center() {
         isRequired
         label="Departamento"
         placeholder="Seleccione un departamento"
-        selectedKeys={new Set(data.departmentId ? [data.departmentId] : [])}
+        selectedKeys={new Set(data.department ? [data.department] : [])}
         onSelectionChange={(value) => {
           setErrors((prev) => ({ ...prev, departmentId: "" }));
           if (value !== "all")
             setData({
               ...data,
-              departmentId: value.values().next().value,
-              cityId: "",
+              department: value.values().next().value,
+              city: "",
             });
         }}
         isLoading={isLoadingDepartments}
@@ -105,12 +100,12 @@ export default function Center() {
         errorMessage={
           !isLoadingDepartments && (departments || []).length === 0
             ? "No hay departamentos registrados"
-            : errors.departmentId
+            : errors.department
         }
-        isInvalid={Boolean(errors.departmentId)}
+        isInvalid={Boolean(errors.department)}
       >
         {(departments || []).map((department) => (
-          <SelectItem key={department.id} value={department.name}>
+          <SelectItem key={department.name} value={department.name}>
             {department.name}
           </SelectItem>
         ))}
@@ -120,23 +115,35 @@ export default function Center() {
         isRequired
         label="Ciudad"
         placeholder="Seleccione una ciudad"
-        selectedKeys={new Set(data.cityId ? [data.cityId] : [])}
+        selectedKeys={new Set(data.city ? [data.city] : [])}
         onSelectionChange={(value) => {
-          setErrors((prev) => ({ ...prev, cityId: "" }));
+          setErrors((prev) => ({ ...prev, city: "" }));
           if (value !== "all")
-            setData({ ...data, cityId: value.values().next().value });
+            setData({ ...data, city: value.values().next().value });
         }}
-        isLoading={isLoadingCities}
-        isDisabled={(cities || []).length === 0}
-        errorMessage={
-          !isLoadingCities && (cities || []).length === 0
-            ? "No hay ciudades registradas"
-            : errors.departmentId
+        isDisabled={
+          !data.department ||
+          (
+            departments?.find(({ name }) => name === data.department)?.cities ||
+            []
+          ).length === 0
         }
-        isInvalid={Boolean(errors.departmentId)}
+        errorMessage={
+          Boolean(data.department) &&
+          (
+            departments?.find(({ name }) => name === data.department)?.cities ||
+            []
+          ).length === 0
+            ? "No hay ciudades registradas"
+            : errors.department
+        }
+        isInvalid={Boolean(errors.city)}
       >
-        {(cities || []).map((city) => (
-          <SelectItem key={city.id} value={city.name}>
+        {(
+          departments?.find(({ name }) => name === data.department)?.cities ||
+          []
+        ).map((city) => (
+          <SelectItem key={city.name} value={city.name}>
             {city.name}
           </SelectItem>
         ))}
@@ -197,14 +204,14 @@ export default function Center() {
           isDisabled={
             !data.name ||
             !data.address ||
-            !data.departmentId ||
-            !data.cityId ||
+            !data.department ||
+            !data.city ||
             !data.phone ||
             !data.email ||
             Boolean(errors.name) ||
             Boolean(errors.address) ||
-            Boolean(errors.departmentId) ||
-            Boolean(errors.cityId) ||
+            Boolean(errors.department) ||
+            Boolean(errors.city) ||
             Boolean(errors.phone) ||
             Boolean(errors.email)
           }

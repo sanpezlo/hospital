@@ -102,7 +102,6 @@ export default function Admin() {
       </form>
       <Sure
         isOpen={isOpen}
-        onOpen={onOpen}
         onOpenChange={onOpenChange}
         onPress={handleSubmit}
         entity="Administrador"

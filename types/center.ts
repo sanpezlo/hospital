@@ -15,7 +15,11 @@ export const CreateCenterSchema = z.object({
     })
     .min(10, "La dirección debe tener al menos 10 caracteres")
     .max(100, "La dirección debe tener como máximo 100 caracteres"),
-  cityId: z.string({
+  department: z.string({
+    required_error: "El departamento es requerido",
+    invalid_type_error: "El departamento debe ser un texto",
+  }),
+  city: z.string({
     required_error: "La ciudad es requerida",
     invalid_type_error: "La ciudad debe ser un texto",
   }),
@@ -55,7 +59,12 @@ export const UpdateCenterSchema = z.object({
     .min(10, "La dirección debe tener al menos 10 caracteres")
     .max(100, "La dirección debe tener como máximo 100 caracteres")
     .optional(),
-  cityId: z
+  department: z
+    .string({
+      invalid_type_error: "El departamento debe ser un texto",
+    })
+    .optional(),
+  city: z
     .string({
       invalid_type_error: "La ciudad debe ser un texto",
     })

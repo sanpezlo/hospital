@@ -5,8 +5,6 @@ import Tabs from "@/app/dashboard/tabs";
 import Center from "@/app/dashboard/center";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
-import Department from "@/app/dashboard/department";
-import City from "@/app/dashboard/city";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -16,42 +14,6 @@ export default async function DashboardPage() {
   return (
     <>
       <h1 className="text-xl my-6">Panel de control</h1>
-
-      {session.user.role === "ADMIN" && (
-        <>
-          <Divider />
-
-          <div className="my-6 gap-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-            <div>
-              <Card className="max-w-full">
-                <CardHeader className="flex gap-4">
-                  <div className="flex flex-col gap-4">
-                    <h2 className="text-md">Crear departamentos</h2>
-                  </div>
-                </CardHeader>
-                <Divider />
-                <CardBody className="overflow-hidden">
-                  <Department />
-                </CardBody>
-              </Card>
-            </div>
-
-            <div>
-              <Card className="max-w-full">
-                <CardHeader className="flex gap-4">
-                  <div className="flex flex-col gap-4">
-                    <h2 className="text-md">Crear ciudades</h2>
-                  </div>
-                </CardHeader>
-                <Divider />
-                <CardBody className="overflow-hidden">
-                  <City />
-                </CardBody>
-              </Card>
-            </div>
-          </div>
-        </>
-      )}
 
       <Divider />
 

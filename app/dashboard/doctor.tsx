@@ -119,7 +119,14 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
           isLoading={isLoadingCenter || isLoadingCenters}
           isDisabled={Boolean(data.centerId) || (centers || []).length === 0}
           isInvalid={Boolean(errors.centerId)}
-          errorMessage={errors.centerId}
+          errorMessage={
+            errors.centerId
+              ? errors.centerId
+              : !centerId &&
+                !isLoadingCenters &&
+                (centers || []).length === 0 &&
+                "No hay centros registrados"
+          }
         >
           {((centerId ? (!center ? [] : [center]) : centers) || []).map(
             (center) => (
@@ -150,7 +157,6 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
       </form>
       <Sure
         isOpen={isOpen}
-        onOpen={onOpen}
         onOpenChange={onOpenChange}
         onPress={handleSubmit}
         entity="Doctor"
@@ -160,7 +166,7 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
           Contraseña: "doctor",
           "Nombre del centro":
             (centerId ? (!center ? [] : [center]) : centers)?.find(
-              (center) => center.id === data.centerId
+              ({ id }) => id === data.centerId
             )?.name || "",
         }}
       />

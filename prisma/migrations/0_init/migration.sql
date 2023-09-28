@@ -58,26 +58,10 @@ CREATE TABLE "Center" (
     "address" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "cityId" TEXT NOT NULL,
+    "department" TEXT NOT NULL,
+    "city" TEXT NOT NULL,
 
     CONSTRAINT "Center_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Department" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "Department_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "City" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "departmentId" TEXT NOT NULL,
-
-    CONSTRAINT "City_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -98,12 +82,6 @@ CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationTok
 -- CreateIndex
 CREATE UNIQUE INDEX "Center_name_key" ON "Center"("name");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Department_name_key" ON "Department"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "City_name_departmentId_key" ON "City"("name", "departmentId");
-
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -112,10 +90,4 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_centerId_fkey" FOREIGN KEY ("centerId") REFERENCES "Center"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Center" ADD CONSTRAINT "Center_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "City" ADD CONSTRAINT "City_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

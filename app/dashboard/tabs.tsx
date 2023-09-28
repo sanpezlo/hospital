@@ -38,7 +38,7 @@ export default function Tabs({
           );
         })}
 
-      <Tab key="DOCTOR" title="doctor">
+      <Tab key="DOCTOR" title="Doctor">
         <Doctor centerId={centerId} />
       </Tab>
 

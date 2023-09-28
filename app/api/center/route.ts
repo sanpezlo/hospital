@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
       data: {
         name: createCenter.name,
         address: createCenter.address,
-        cityId: createCenter.cityId,
+        department: createCenter.department,
+        city: createCenter.city,
         phone: createCenter.phone,
         email: createCenter.email,
       },

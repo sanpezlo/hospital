@@ -35,19 +35,18 @@ model Session {
 }
 
 model User {
-  id                        String                      @id @default(cuid())
-  name                      String?
-  email                     String?                     @unique
-  emailVerified             DateTime?
-  hashedPassword            String
-  role                      Role                        @default(PATIENT)
-  passwordChanged           DateTime?
-  image                     String?
-  centerId                  String?
-  accounts                  Account[]
-  sessions                  Session[]
-  center                    Center?                     @relation(fields: [centerId], references: [id])
-  RequestMedicalAppointment RequestMedicalAppointment[]
+  id              String    @id @default(cuid())
+  name            String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  hashedPassword  String
+  role            Role      @default(PATIENT)
+  passwordChanged DateTime?
+  image           String?
+  centerId        String?
+  accounts        Account[]
+  sessions        Session[]
+  center          Center?   @relation(fields: [centerId], references: [id])
 }
 
 model VerificationToken {
@@ -59,31 +58,14 @@ model VerificationToken {
 }
 
 model Center {
-  id                        String                      @id @default(cuid())
-  name                      String                      @unique
-  address                   String
-  phone                     String
-  email                     String
-  cityId                    String
-  city                      City                        @relation(fields: [cityId], references: [id])
-  users                     User[]
-  RequestMedicalAppointment RequestMedicalAppointment[]
-}
-
-model Department {
-  id     String @id @default(cuid())
-  name   String @unique
-  cities City[]
-}
-
-model City {
-  id           String     @id @default(cuid())
-  name         String
-  departmentId String
-  Center       Center[]
-  department   Department @relation(fields: [departmentId], references: [id])
-
-  @@unique([name, departmentId])
+  id         String @id @default(cuid())
+  name       String @unique
+  address    String
+  phone      String
+  email      String
+  department String
+  city       String
+  users      User[]
 }
 
 enum Role {
@@ -93,20 +75,3 @@ enum Role {
   SECRETARY
   PATIENT
 }
-
-model RequestMedicalAppointment {
-  id String @id @default(cuid())
-
-  patientId String
-  patient   User   @relation(fields: [patientId], references: [id])
-
-  centerId String
-  center   Center @relation(fields: [centerId], references: [id])
-
-  reason String?
-  date   DateTime
-
-  createdAt DateTime @default(now())
-}
-
-// model MedicalAppointment
