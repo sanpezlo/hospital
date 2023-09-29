@@ -35,19 +35,30 @@ model Session {
 }
 
 model User {
-  id              String    @id @default(cuid())
+  id              String     @id @default(cuid())
   name            String?
-  email           String?   @unique
+  email           String?    @unique
   emailVerified   DateTime?
   hashedPassword  String
-  role            Role      @default(PATIENT)
+  role            Role       @default(PATIENT)
   passwordChanged DateTime?
   image           String?
   centerId        String?
   specialization  String?
   accounts        Account[]
   sessions        Session[]
-  center          Center?   @relation(fields: [centerId], references: [id])
+  schedules       Schedule[]
+  center          Center?    @relation(fields: [centerId], references: [id])
+}
+
+model Schedule {
+  id String @id @default(cuid())
+
+  startTime     String
+  departureTime String
+  days          String[]
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
 }
 
 model VerificationToken {

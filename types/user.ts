@@ -56,6 +56,42 @@ export const CreateUserSchema = CreateAdminSchema.extend({
     required_error: "El centro es requerido",
     invalid_type_error: "El centro debe ser un texto",
   }),
+  schedules: z
+    .array(
+      z.object(
+        {
+          startTime: z.string({
+            required_error: "La hora de inicio es requerida",
+            invalid_type_error: "La hora de inicio debe ser un texto",
+          }),
+          departureTime: z.string({
+            required_error: "La hora de finalización es requerida",
+            invalid_type_error: "La hora de finalización debe ser un texto",
+          }),
+          days: z
+            .array(
+              z.string({
+                required_error: "El día es requerido",
+                invalid_type_error: "El día debe ser un texto",
+              }),
+              {
+                required_error: "Los días son requeridos",
+                invalid_type_error: "Los días deben ser un arreglo de textos",
+              }
+            )
+            .min(1, { message: "Debe haber al menos un día" }),
+        },
+        {
+          required_error: "El horario es requerido",
+          invalid_type_error: "El horario debe ser un objeto",
+        }
+      ),
+      {
+        required_error: "Los horarios son requeridos",
+        invalid_type_error: "Los horarios deben ser un arreglo de objetos",
+      }
+    )
+    .min(1, { message: "Debe haber al menos un horario" }),
   specialization: z
     .string({
       invalid_type_error: "La especialización debe ser un texto",
@@ -69,6 +105,11 @@ export const UpdateUserSchema = UpdateAdminSchema.extend({
   centerId: z.string({
     invalid_type_error: "El centro debe ser un texto",
   }),
+  specialization: z
+    .string({
+      invalid_type_error: "La especialización debe ser un texto",
+    })
+    .optional(),
 });
 
 export type UpdateUser = z.infer<typeof UpdateUserSchema>;

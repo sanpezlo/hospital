@@ -7,16 +7,26 @@ import {
   Select,
   SelectItem,
   useDisclosure,
+  Tooltip,
+  Card,
+  CardBody,
+  Chip,
 } from "@nextui-org/react";
 import { Center } from "@prisma/client";
 import { useState } from "react";
 import useSWR from "swr";
 import Sure from "@/app/dashboard/sure";
+import { CreateUser } from "@/types/user";
+import { standardTime } from "@/lib/parse";
+import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import Schedule from "@/app/dashboard/schedule";
 
 export default function Secretary({ centerId = "" }: { centerId?: string }) {
-  const [data, setData] = useState({
+  const [data, setData] = useState<CreateUser>({
     name: "",
     email: "",
+    schedules: [],
+    specialization: "Ninguna",
     centerId: centerId,
   });
 
@@ -24,6 +34,8 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
     name: "",
     email: "",
     centerId: "",
+    schedules: "",
+    specialization: "",
   });
 
   const { data: centers, isLoading: isLoadingCenters } = useSWR<Center[]>(
@@ -37,6 +49,12 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
   );
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const {
+    isOpen: isOpenSchedule,
+    onOpen: onOpenSchedule,
+    onOpenChange: onOpenChangeSchedule,
+  } = useDisclosure();
 
   const handleSubmit = async () => {
     const response = await fetch("/api/user/secretary", {
@@ -52,6 +70,8 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
         name: "",
         email: "",
         centerId: "",
+        schedules: [],
+        specialization: "Ninguna",
       });
     } else if (response.status === 400) {
       if (body.error.error) {
@@ -117,7 +137,7 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
               setData({ ...data, centerId: value.values().next().value });
           }}
           isLoading={isLoadingCenter || isLoadingCenters}
-          isDisabled={Boolean(data.centerId) || (centers || []).length === 0}
+          isDisabled={Boolean(centerId) || (centers || []).length === 0}
           isInvalid={Boolean(errors.centerId)}
           errorMessage={
             errors.centerId
@@ -137,6 +157,66 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
           )}
         </Select>
 
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between">
+            Horarios
+            <Tooltip content="Agregar horario">
+              <Button
+                isIconOnly={true}
+                variant="light"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onOpenSchedule();
+                }}
+                aria-label="Agregar horario"
+              >
+                <PlusCircleIcon className="w-6" />
+              </Button>
+            </Tooltip>
+          </div>
+          {data.schedules.map((schedule, index) => (
+            <Card key={index} className="bg-default/40" shadow="none">
+              <CardBody className="flex flex-col gap-2 relative">
+                <Tooltip content="Eliminar horario" color="danger">
+                  <XCircleIcon
+                    className="w-6 absolute right-1 top-1 hover:opacity-80 cursor-pointer text-danger"
+                    onClick={() => {
+                      setData((prev) => {
+                        const next = [...prev.schedules];
+                        next.splice(index, 1);
+                        return { ...prev, schedules: next };
+                      });
+                    }}
+                  />
+                </Tooltip>
+                <div className="flex gap-2 flex-wrap">
+                  Hora:
+                  <Chip variant="solid">
+                    {standardTime(schedule.startTime)} -{" "}
+                    {standardTime(schedule.departureTime)}
+                  </Chip>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  Dias:
+                  {schedule.days.map((day, index) => (
+                    <Chip key={`${day}-${index}`} variant="solid">
+                      {day}
+                    </Chip>
+                  ))}
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+
+          <Schedule
+            isOpen={isOpenSchedule}
+            onOpenChange={onOpenChangeSchedule}
+            onPress={handleSubmit}
+            setData={setData}
+          />
+        </div>
+
         <div className="flex gap-2 justify-end">
           <Button
             fullWidth
@@ -145,9 +225,11 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
             isDisabled={
               !data.name ||
               !data.email ||
+              data.schedules.length === 0 ||
               !data.centerId ||
               Boolean(errors.name) ||
               Boolean(errors.email) ||
+              Boolean(errors.schedules) ||
               Boolean(errors.centerId)
             }
           >

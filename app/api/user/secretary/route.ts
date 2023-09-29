@@ -47,6 +47,9 @@ export async function POST(request: NextRequest) {
         email: createUser.email,
         hashedPassword,
         role: "SECRETARY",
+        schedules: {
+          create: createUser.schedules,
+        },
         center: {
           connect: {
             id: createUser.centerId,

@@ -7,24 +7,27 @@ import {
   Select,
   SelectItem,
   useDisclosure,
+  Chip,
+  Card,
+  CardBody,
+  Tooltip,
+  CardHeader,
 } from "@nextui-org/react";
 import { type Center } from "@prisma/client";
 import { useState } from "react";
 import useSWR from "swr";
 import Sure from "@/app/dashboard/sure";
+import Schedule from "@/app/dashboard/schedule";
+import { CreateUser } from "@/types/user";
+import { standardTime } from "@/lib/parse";
+import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 
 export default function Director() {
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    specialization: "Ninguna",
-    centerId: "",
-  });
-
   const [errors, setErrors] = useState({
     name: "",
     email: "",
     specialization: "",
+    schedules: "",
     centerId: "",
   });
 
@@ -40,7 +43,25 @@ export default function Director() {
     string[]
   >("/api/specialization", fetcher());
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [data, setData] = useState<CreateUser>({
+    name: "",
+    email: "",
+    specialization: isLoadingSpecialization ? "" : "Ninguna",
+    schedules: [],
+    centerId: "",
+  });
+
+  const {
+    isOpen: isOpenSure,
+    onOpen: onOpenSure,
+    onOpenChange: onOpenChangeSure,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenSchedule,
+    onOpen: onOpenSchedule,
+    onOpenChange: onOpenChangeSchedule,
+  } = useDisclosure();
 
   const handleSubmit = async () => {
     const response = await fetch("/api/user/director", {
@@ -56,6 +77,7 @@ export default function Director() {
         name: "",
         email: "",
         specialization: "Ninguna",
+        schedules: [],
         centerId: "",
       });
     } else if (response.status === 400) {
@@ -81,7 +103,7 @@ export default function Director() {
         className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          onOpen();
+          onOpenSure();
         }}
       >
         <Input
@@ -110,7 +132,6 @@ export default function Director() {
           isInvalid={Boolean(errors.email)}
           errorMessage={errors.email}
         />
-
         <Select
           isRequired
           label="Especialización"
@@ -146,7 +167,6 @@ export default function Director() {
             </SelectItem>
           ))}
         </Select>
-
         <Select
           isRequired
           label="Centro"
@@ -175,6 +195,65 @@ export default function Director() {
           ))}
         </Select>
 
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between">
+            Horarios
+            <Tooltip content="Agregar horario">
+              <Button
+                isIconOnly={true}
+                variant="light"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onOpenSchedule();
+                }}
+                aria-label="Agregar horario"
+              >
+                <PlusCircleIcon className="w-6" />
+              </Button>
+            </Tooltip>
+          </div>
+          {data.schedules.map((schedule, index) => (
+            <Card key={index} className="bg-default/40" shadow="none">
+              <CardBody className="flex flex-col gap-2 relative">
+                <Tooltip content="Eliminar horario" color="danger">
+                  <XCircleIcon
+                    className="w-6 absolute right-1 top-1 hover:opacity-80 cursor-pointer text-danger"
+                    onClick={() => {
+                      setData((prev) => {
+                        const next = [...prev.schedules];
+                        next.splice(index, 1);
+                        return { ...prev, schedules: next };
+                      });
+                    }}
+                  />
+                </Tooltip>
+                <div className="flex gap-2 flex-wrap">
+                  Hora:
+                  <Chip variant="solid">
+                    {standardTime(schedule.startTime)} -{" "}
+                    {standardTime(schedule.departureTime)}
+                  </Chip>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  Dias:
+                  {schedule.days.map((day, index) => (
+                    <Chip key={`${day}-${index}`} variant="solid">
+                      {day}
+                    </Chip>
+                  ))}
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+
+          <Schedule
+            isOpen={isOpenSchedule}
+            onOpenChange={onOpenChangeSchedule}
+            onPress={handleSubmit}
+            setData={setData}
+          />
+        </div>
         <div className="flex gap-2 justify-end">
           <Button
             fullWidth
@@ -184,10 +263,12 @@ export default function Director() {
               !data.name ||
               !data.email ||
               !data.specialization ||
+              data.schedules.length === 0 ||
               !data.centerId ||
               Boolean(errors.name) ||
               Boolean(errors.email) ||
               Boolean(errors.specialization) ||
+              Boolean(errors.schedules) ||
               Boolean(errors.centerId)
             }
           >
@@ -196,14 +277,14 @@ export default function Director() {
         </div>
       </form>
       <Sure
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        isOpen={isOpenSure}
+        onOpenChange={onOpenChangeSure}
         onPress={handleSubmit}
         entity="Director"
         list={{
           Nombre: data.name,
           "Correo electrónico": data.email,
-          Especialización: data.specialization,
+          Especialización: data.specialization || "Ninguna",
           Contraseña: "director",
           "Nombre del centro":
             centersAvailable?.find((center) => center.id === data.centerId)
