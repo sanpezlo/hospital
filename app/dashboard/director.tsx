@@ -46,7 +46,7 @@ export default function Director() {
   const [data, setData] = useState<CreateUser>({
     name: "",
     email: "",
-    specialization: isLoadingSpecialization ? "" : "Ninguna",
+    specialization: "Ninguna",
     schedules: [],
     centerId: "",
   });

@@ -11,7 +11,14 @@ export async function GET(request: NextRequest) {
   return errorHandler(async () => {
     const accounts = await prisma.user.findMany({
       where: {
-        role: "DOCTOR",
+        OR: [
+          {
+            role: "DOCTOR",
+          },
+          {
+            role: "DIRECTOR",
+          },
+        ],
       },
     });
     return NextResponse.json(accounts);

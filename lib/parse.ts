@@ -23,3 +23,7 @@ export function standardTime(time: string) {
   if (t === 12) return "12:00 PM";
   return `${t - 12}:00 PM`;
 }
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

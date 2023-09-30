@@ -1,4 +1,4 @@
-import RequestMedicalAppointment from "@/app/request-medical-appointment";
+import MedicalAppointment from "@/app/medical-appointment";
 
 export default function HomePage() {
   return (
@@ -19,7 +19,9 @@ export default function HomePage() {
           y eficaz.
         </p>
       </div>
-      <div>{/* <RequestMedicalAppointment /> */}</div>
+      <div>
+        <MedicalAppointment />
+      </div>
     </div>
   );
 }

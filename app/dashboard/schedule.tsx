@@ -21,10 +21,10 @@ import { militaryTime } from "@/lib/parse";
 const days = [
   "Lunes",
   "Martes",
-  "Miercoles",
+  "Miércoles",
   "Jueves",
   "Viernes",
-  "Sabado",
+  "Sábado",
   "Domingo",
 ] as const;
 

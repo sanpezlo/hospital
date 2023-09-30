@@ -49,6 +49,9 @@ model User {
   sessions        Session[]
   schedules       Schedule[]
   center          Center?    @relation(fields: [centerId], references: [id])
+
+  doctorAppointment  MedicalAppointment[] @relation(name: "DoctorAppointments")
+  patientAppointment MedicalAppointment[] @relation(name: "PatientAppointments")
 }
 
 model Schedule {
@@ -86,4 +89,16 @@ enum Role {
   DOCTOR
   SECRETARY
   PATIENT
+}
+
+model MedicalAppointment {
+  id   String   @id @default(cuid())
+  date DateTime
+
+  patient   User   @relation(name: "PatientAppointments", fields: [patientId], references: [id])
+  patientId String
+  doctor    User   @relation(name: "DoctorAppointments", fields: [doctorId], references: [id])
+  doctorId  String
+
+  @@unique([patientId, doctorId, date])
 }

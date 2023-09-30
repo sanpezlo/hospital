@@ -47,7 +47,7 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
   const [data, setData] = useState<CreateUser>({
     name: "",
     email: "",
-    specialization: isLoadingSpecialization ? "" : "Ninguna",
+    specialization: "Ninguna",
     schedules: [],
     centerId: "",
   });
