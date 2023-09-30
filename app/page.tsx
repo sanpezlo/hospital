@@ -1,6 +1,10 @@
 import MedicalAppointment from "@/app/medical-appointment";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
   return (
     <div className="my-6 gap-6 grid grid-cols-1 md:grid-cols-2">
       <div className="flex flex-col">
@@ -19,9 +23,7 @@ export default function HomePage() {
           y eficaz.
         </p>
       </div>
-      <div>
-        <MedicalAppointment />
-      </div>
+      <div>{session?.user.role === "PATIENT" && <MedicalAppointment />}</div>
     </div>
   );
 }
