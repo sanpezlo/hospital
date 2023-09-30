@@ -100,5 +100,13 @@ model MedicalAppointment {
   doctor    User   @relation(name: "DoctorAppointments", fields: [doctorId], references: [id])
   doctorId  String
 
+  status MedicalAppointmentStatus @default(PENDING)
+
   @@unique([patientId, doctorId, date])
+}
+
+enum MedicalAppointmentStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
 }

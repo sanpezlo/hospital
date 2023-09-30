@@ -71,7 +71,7 @@ export default function MedicalAppointment() {
     centerId: "",
     doctorId: "",
     year: years[0],
-    month: "1",
+    month: "",
     day: "",
     hour: "",
   });
@@ -138,7 +138,7 @@ export default function MedicalAppointment() {
         centerId: "",
         doctorId: "",
         year: years[0],
-        month: "1",
+        month: "",
         day: "",
         hour: "",
       });
@@ -245,6 +245,7 @@ export default function MedicalAppointment() {
                   setData({
                     ...data,
                     year: value.values().next().value,
+                    month: "",
                     day: "",
                     hour: "",
                   });
@@ -273,6 +274,16 @@ export default function MedicalAppointment() {
                     hour: "",
                   });
               }}
+              disabledKeys={months
+                .map((month, index) => (index + 1).toString())
+                .filter((month, index) => {
+                  const m = new Date().getMonth();
+
+                  if (data.year === years[0]) return index < m;
+
+                  console.log({ m, index }, index > m);
+                  return index > m;
+                })}
               errorMessage={errors.month}
               isInvalid={Boolean(errors.month)}
             >
@@ -311,34 +322,60 @@ export default function MedicalAppointment() {
                     "No hay días disponibles"
               }
               isInvalid={Boolean(errors.day)}
-              disabledKeys={Array.from(
-                {
-                  length: new Date(
-                    parseInt(data.year),
-                    parseInt(data.month),
-                    0
-                  ).getDate(),
-                },
-                (_, i) => i + 1
-              )
-                .filter((day) => {
-                  const date = new Date(
-                    parseInt(data.year),
-                    parseInt(data.month) - 1,
-                    day
-                  );
+              disabledKeys={[
+                ...Array.from(
+                  {
+                    length: new Date(
+                      parseInt(data.year),
+                      parseInt(data.month),
+                      0
+                    ).getDate(),
+                  },
+                  (_, i) => i + 1
+                )
+                  .filter((day) => {
+                    const date = new Date(
+                      parseInt(data.year),
+                      parseInt(data.month) - 1,
+                      day
+                    );
 
-                  const dayName = capitalize(
-                    date.toLocaleDateString("es", {
-                      weekday: "long",
-                    })
-                  );
+                    const dayName = capitalize(
+                      date.toLocaleDateString("es", {
+                        weekday: "long",
+                      })
+                    );
 
-                  return !schedules?.some((schedule) =>
-                    schedule.days.some((day) => day === dayName)
-                  );
-                })
-                .map((day) => day.toString())}
+                    return !schedules?.some((schedule) =>
+                      schedule.days.some((day) => day === dayName)
+                    );
+                  })
+                  .map((day) => day.toString()),
+                ...Array.from(
+                  {
+                    length: new Date(
+                      parseInt(data.year),
+                      parseInt(data.month),
+                      0
+                    ).getDate(),
+                  },
+                  (_, i) => i + 1
+                )
+                  .filter((day) => {
+                    const date = new Date();
+
+                    const today = date.getDate();
+
+                    if (
+                      data.year === years[0] &&
+                      data.month === (date.getMonth() + 1).toString()
+                    ) {
+                      return day < today;
+                    }
+                    return false;
+                  })
+                  .map((day) => day.toString()),
+              ]}
             >
               {Array.from(
                 {
