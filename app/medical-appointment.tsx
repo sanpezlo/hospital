@@ -166,7 +166,11 @@ export default function MedicalAppointment() {
       </CardHeader>
       <Divider />
       <CardBody className="overflow-hidden">
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form
+          id="appointment"
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit}
+        >
           <Select
             isRequired
             label="Centro"
@@ -476,10 +480,12 @@ export default function MedicalAppointment() {
                 !data.year ||
                 !data.month ||
                 !data.day ||
+                !data.hour ||
                 Boolean(errors.centerId) ||
                 Boolean(errors.year) ||
                 Boolean(errors.month) ||
-                Boolean(errors.day)
+                Boolean(errors.day) ||
+                Boolean(errors.hour)
               }
             >
               Solicitar cita

@@ -20,6 +20,7 @@ import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
+  DropdownSection,
   DropdownItem,
   Tooltip,
 } from "@nextui-org/react";
@@ -28,6 +29,7 @@ import { useTheme } from "next-themes";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { Role } from "@prisma/client";
 
 export default function Header() {
   const router = useRouter();
@@ -47,12 +49,27 @@ export default function Header() {
 
   const authenticatedItems = [
     {
+      section: true,
       title: "Mi cuenta",
       link: "/self",
+      items: [
+        {
+          roles: "ANY" as const,
+          title: "Información básica",
+          link: "/self#basic-info",
+        },
+        {
+          roles: [Role.PATIENT, Role.DOCTOR, Role.DIRECTOR],
+          title: "Mis citas",
+          link: "/self#appointments",
+        },
+      ],
     },
     {
+      section: false,
       title: "Cerrar sesión",
       link: "/auth/signout",
+      items: [],
     },
   ];
 
@@ -155,7 +172,27 @@ export default function Header() {
                 }}
               >
                 {authenticatedItems.map((item, index) =>
-                  authenticatedItems.length - 1 !== index ? (
+                  item.section ? (
+                    <DropdownSection
+                      title={item.title}
+                      key={item.title}
+                      showDivider
+                    >
+                      {item.items
+                        .filter((item) =>
+                          item.roles !== "ANY"
+                            ? item.roles.some(
+                                (role) => role === session.user.role
+                              )
+                            : true
+                        )
+                        .map((item, index) => (
+                          <DropdownItem key={item.link}>
+                            {item.title}
+                          </DropdownItem>
+                        ))}
+                    </DropdownSection>
+                  ) : authenticatedItems.length - 1 !== index ? (
                     <DropdownItem key={item.link}>{item.title}</DropdownItem>
                   ) : (
                     <DropdownItem

@@ -9,6 +9,7 @@ import { Tooltip } from "@nextui-org/tooltip";
 import { Chip } from "@nextui-org/chip";
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { role } from "@/lib/parse";
+import MedicalAppointment from "@/app/self/medical-appointment";
 
 export default async function SelfPage() {
   const session = await getServerSession(authOptions);
@@ -39,7 +40,7 @@ export default async function SelfPage() {
       <Divider />
 
       <div className="my-6 gap-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-        <div>
+        <div id="basic-info">
           <Card className="max-w-full">
             <CardHeader className="flex gap-4 justify-between">
               <h2 className="text-md">Información básica</h2>
@@ -67,6 +68,9 @@ export default async function SelfPage() {
               </form>
             </CardBody>
           </Card>
+        </div>
+        <div id="appointments" className="col-span-1 sm:col-span-2">
+          <MedicalAppointment />
         </div>
       </div>
     </>

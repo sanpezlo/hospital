@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { type Role, type MedicalAppointmentStatus } from "@prisma/client";
 
 export function role(role: Role) {
   if (role === "ADMIN") return "Administrador";
@@ -6,6 +6,12 @@ export function role(role: Role) {
   if (role === "DOCTOR") return "Doctor";
   if (role === "SECRETARY") return "Secretaria";
   if (role === "PATIENT") return "Paciente";
+}
+
+export function medicalAppointmentStatus(status: MedicalAppointmentStatus) {
+  if (status === "PENDING") return "Pendiente";
+  if (status === "ACCEPTED") return "Aceptada";
+  if (status === "COMPLETED") return "Completada";
 }
 
 export function militaryTime(time: string, period: "AM" | "PM") {

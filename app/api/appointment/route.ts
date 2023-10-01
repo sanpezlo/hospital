@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
             id: createAppointment.patientId,
           },
         },
+        status: "ACCEPTED",
       },
     });
     return NextResponse.json(appointment);

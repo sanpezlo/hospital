@@ -1,13 +1,16 @@
 import MedicalAppointment from "@/app/medical-appointment";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Card, CardHeader, CardBody } from "@nextui-org/card";
+import { Divider } from "@nextui-org/divider";
+import SignUp from "./auth/signup/signup";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
   return (
     <div className="my-6 gap-6 grid grid-cols-1 md:grid-cols-2">
-      <div className="flex flex-col">
+      <div className="flex flex-col justify-center">
         <h2 className="tracking-tight font-semibold text-5xl">
           <span>Tu salud es importante</span>
           <div>
@@ -23,7 +26,23 @@ export default async function HomePage() {
           y eficaz.
         </p>
       </div>
-      <div>{session?.user.role === "PATIENT" && <MedicalAppointment />}</div>
+
+      <div className="grid place-items-center">
+        {session?.user.role === "PATIENT" && <MedicalAppointment />}
+        {session === null && (
+          <Card className="sm:mx-auto sm:w-full sm:max-w-sm">
+            <CardHeader className="flex">
+              <div className="flex justify-center items-center w-full">
+                <h1 className="text-3xl m-auto">Regístrate</h1>
+              </div>
+            </CardHeader>
+            <Divider />
+            <CardBody className="overflow-hidden">
+              <SignUp />
+            </CardBody>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
