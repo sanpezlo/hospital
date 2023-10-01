@@ -160,7 +160,7 @@ export default function MedicalAppointment() {
   };
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="flex gap-4">
         <h3 className="text-md">Agendar cita</h3>
       </CardHeader>
