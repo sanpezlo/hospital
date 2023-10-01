@@ -300,6 +300,7 @@ const ThemeSwitch = (props: SwitchProps) => {
     <div className="flex flex-col gap-2">
       <Tooltip
         content={isSelected ? "Cambiar a tema oscuro" : "Cambiar a tema claro"}
+        color={isSelected ? "primary" : "default"}
       >
         <Component {...getBaseProps()}>
           <VisuallyHidden>

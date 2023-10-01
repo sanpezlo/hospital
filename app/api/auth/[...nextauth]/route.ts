@@ -58,22 +58,17 @@ export const authOptions: NextAuthOptions = {
         ...session,
         user: {
           ...session.user,
-          id: token.sub,
-          passwordChanged: token.passwordChanged,
-          role: token.role,
-          centerId: token.centerId,
+          ...token,
         },
       };
     },
-    jwt: async ({ token, user }) => {
-      const u = user as unknown as User;
+    jwt: async ({ token, user, trigger, session }) => {
+      const u = (trigger === "update" ? session.user : user) as unknown as User;
 
       if (u)
         return {
           ...token,
-          role: u.role,
-          passwordChanged: u.passwordChanged,
-          centerId: u.centerId,
+          ...u,
         };
       return token;
     },

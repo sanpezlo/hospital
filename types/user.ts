@@ -102,9 +102,11 @@ export const CreateUserSchema = CreateAdminSchema.extend({
 export type CreateUser = z.infer<typeof CreateUserSchema>;
 
 export const UpdateUserSchema = UpdateAdminSchema.extend({
-  centerId: z.string({
-    invalid_type_error: "El centro debe ser un texto",
-  }),
+  centerId: z
+    .string({
+      invalid_type_error: "El centro debe ser un texto",
+    })
+    .optional(),
   specialization: z
     .string({
       invalid_type_error: "La especialización debe ser un texto",
