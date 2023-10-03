@@ -12,6 +12,7 @@ declare module "next-auth" {
       passwordChanged: Date | null;
       specialization: string | null;
       centerId: string | null;
+      hashedPassword: string;
     } & DefaultSession["user"];
   }
 }

@@ -285,7 +285,6 @@ export default function MedicalAppointment() {
 
                   if (data.year === years[0]) return index < m;
 
-                  console.log({ m, index }, index > m);
                   return index > m;
                 })}
               errorMessage={errors.month}
