@@ -374,7 +374,7 @@ export default function MedicalAppointment() {
                       data.year === years[0] &&
                       data.month === (date.getMonth() + 1).toString()
                     ) {
-                      return day < today;
+                      return day <= today;
                     }
                     return false;
                   })

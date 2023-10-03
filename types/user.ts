@@ -7,7 +7,10 @@ export const CreateAdminSchema = z.object({
       invalid_type_error: "El nombre debe ser un texto",
     })
     .min(3, "El nombre debe tener al menos 3 caracteres")
-    .max(100, "El nombre debe tener como máximo 100 caracteres"),
+    .max(100, "El nombre debe tener como máximo 100 caracteres")
+    .regex(new RegExp("^[^0-9]*$"), {
+      message: "El nombre no debe contener números",
+    }),
   email: z
     .string({
       required_error: "El correo electrónico es requerido",

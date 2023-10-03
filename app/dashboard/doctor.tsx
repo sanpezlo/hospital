@@ -49,7 +49,7 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
     email: "",
     specialization: "Ninguna",
     schedules: [],
-    centerId: "",
+    centerId: centerId,
   });
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -75,7 +75,7 @@ export default function Doctor({ centerId = "" }: { centerId?: string }) {
         email: "",
         specialization: "Ninguna",
         schedules: [],
-        centerId: "",
+        centerId: centerId,
       });
     } else if (response.status === 400) {
       if (body.error.error) {

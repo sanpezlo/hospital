@@ -69,7 +69,7 @@ export default function Secretary({ centerId = "" }: { centerId?: string }) {
       setData({
         name: "",
         email: "",
-        centerId: "",
+        centerId: centerId,
         schedules: [],
         specialization: "Ninguna",
       });
