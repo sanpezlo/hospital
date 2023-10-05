@@ -5,13 +5,19 @@ export function role(role: Role) {
   if (role === "DIRECTOR") return "Director";
   if (role === "DOCTOR") return "Doctor";
   if (role === "SECRETARY") return "Secretaria";
-  if (role === "PATIENT") return "Paciente";
+  return "Paciente";
 }
 
 export function medicalAppointmentStatus(status: MedicalAppointmentStatus) {
   if (status === "PENDING") return "Pendiente";
   if (status === "ACCEPTED") return "Aceptada";
-  if (status === "COMPLETED") return "Completada";
+  return "Completada";
+}
+
+export function action(action: "view" | "edit" | "delete") {
+  if (action === "view") return "Ver";
+  if (action === "edit") return "Editar";
+  return "Eliminar";
 }
 
 export function militaryTime(time: string, period: "AM" | "PM") {

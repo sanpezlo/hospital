@@ -28,7 +28,7 @@ export default function Tabs({
   centerId?: string;
 }) {
   return (
-    <NextuiTabs fullWidth size="md" aria-label="Tabs form">
+    <NextuiTabs id="users" fullWidth size="md" aria-label="Tabs form">
       {role === "ADMIN" &&
         adminTabs.map((tab) => {
           return (

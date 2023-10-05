@@ -43,12 +43,6 @@ export const UpdateAdminSchema = z.object({
     .string({
       invalid_type_error: "La contraseña debe ser un texto",
     })
-    .min(6, {
-      message: "La contraseña debe tener al menos 6 caracteres",
-    })
-    .max(100, {
-      message: "La contraseña debe tener como máximo 100 caracteres",
-    })
     .optional(),
   newPassword: z
     .string({

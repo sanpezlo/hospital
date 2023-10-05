@@ -7,7 +7,6 @@ import {
   CardHeader,
   Divider,
   Input,
-  SwitchProps,
   Tooltip,
   VisuallyHidden,
   useDisclosure,
@@ -16,7 +15,7 @@ import {
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import ChangePassword from "./change-password";
+import ChangePassword from "@/app/self/change-password";
 
 export default function BasicInformation() {
   const { data: session, status, update } = useSession();

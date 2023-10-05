@@ -66,7 +66,7 @@ export default function Center() {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <form id="center" className="flex flex-col gap-4" onSubmit={handleSubmit}>
       <Input
         isRequired
         label="Nombre"

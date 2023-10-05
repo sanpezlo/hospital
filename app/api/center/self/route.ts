@@ -8,14 +8,16 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   return errorHandler(async () => {
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Unauthorized("No autorizado");
+    if (session.user.role === "ADMIN" || session.user.role === "PATIENT")
+      throw new Forbidden("No autorizado");
+
     const center = await prisma.center.findUnique({
       where: {
-        id: params.id,
+        id: session.user.centerId as string,
       },
       include: {
         users: true,
@@ -25,14 +27,11 @@ export async function GET(
   });
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   return errorHandler(async () => {
     const session = await getServerSession(authOptions);
     if (!session) throw new Unauthorized("No autorizado");
-    if (session.user.role !== "ADMIN") throw new Forbidden("No autorizado");
+    if (session.user.role !== "DIRECTOR") throw new Forbidden("No autorizado");
 
     const body = await request.json();
 
@@ -40,7 +39,7 @@ export async function PUT(
 
     const currentCenter = await prisma.center.findUnique({
       where: {
-        id: params.id,
+        id: session.user.centerId as string,
       },
     });
 
@@ -59,7 +58,7 @@ export async function PUT(
 
     const center = await prisma.center.update({
       where: {
-        id: params.id,
+        id: session.user.centerId as string,
       },
       data: updateCenter,
     });

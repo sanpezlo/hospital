@@ -5,11 +5,28 @@ import Tabs from "@/app/dashboard/tabs";
 import Center from "@/app/dashboard/center";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
+import Centers from "@/app/centers";
+import { prisma } from "@/lib/prisma";
+import CenterComponent from "@/app/dashboard/center/[centerId]/center";
+import BasicInformation from "@/app/dashboard/center/[centerId]/basic-information";
+import { Center as CenterPrisma, User } from "@prisma/client";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (session?.user.role !== "ADMIN" && session?.user.role !== "DIRECTOR")
     return redirect("/");
+
+  const center =
+    session.user.role === "DIRECTOR"
+      ? await prisma.center.findUnique({
+          where: {
+            id: session.user.centerId as string,
+          },
+          include: {
+            users: true,
+          },
+        })
+      : null;
 
   return (
     <>
@@ -64,6 +81,25 @@ export default async function DashboardPage() {
             </CardBody>
           </Card>
         </div>
+        {session.user.role === "ADMIN" && (
+          <Centers isAdmin className="col-span-1 sm:col-span-2 xl:col-span-3" />
+        )}
+        {session.user.role === "DIRECTOR" && (
+          <>
+            <div id="basic-info">
+              <BasicInformation center={center as CenterPrisma} />
+            </div>
+
+            <CenterComponent
+              center={
+                center as {
+                  users: User[];
+                } & CenterPrisma
+              }
+              className="col-span-1 sm:col-span-2 xl:col-span-3"
+            />
+          </>
+        )}
       </div>
     </>
   );

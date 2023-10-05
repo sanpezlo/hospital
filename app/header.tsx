@@ -166,7 +166,7 @@ export default function Header() {
                     key ===
                     authenticatedItems[authenticatedItems.length - 1].link
                   )
-                    signOut();
+                    return signOut();
 
                   router.push(`${key}`);
                 }}
