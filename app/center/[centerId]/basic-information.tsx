@@ -109,16 +109,6 @@ export default function BasicInformation({ center }: { center: Center }) {
               labelPlacement="inside"
               value={center.email}
             />
-
-            {/* {(session?.user.role === "DOCTOR" ||
-              session?.user.role === "DIRECTOR") && (
-              <Input
-                label="Especialidad"
-                placeholder="Ingrese su especialidad"
-                value={session?.user.specialization || ""}
-                isDisabled={true}={true}
-              />
-            )} */}
           </form>
         </CardBody>
       </Card>

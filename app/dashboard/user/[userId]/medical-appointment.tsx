@@ -3,7 +3,11 @@
 import React from "react";
 
 import useSWR from "swr";
-import { MedicalAppointment, MedicalAppointmentStatus } from "@prisma/client";
+import {
+  MedicalAppointment,
+  MedicalAppointmentStatus,
+  Role,
+} from "@prisma/client";
 import { fetcher } from "@/lib/fetcher";
 import { useSession } from "next-auth/react";
 import Table from "@/app/table";
@@ -81,37 +85,31 @@ const columnsDoctor = [
   },
 ];
 
-export default function MedicalAppointment() {
-  const { data: session, status } = useSession();
+export default function MedicalAppointment({
+  appointments,
+  role,
+  className,
+}: {
+  appointments: MedicalAppointment[];
+  role: Role;
+  className?: string;
+}) {
   const router = useRouter();
-
-  const { data: appointments, isLoading: isLoadingAppointments } = useSWR<
-    MedicalAppointment[]
-  >("/api/appointment/self", fetcher());
 
   return (
     <Table
-      onPressAdd={
-        session?.user.role === "PATIENT"
-          ? () => {
-              router.push("/#appointment");
-            }
-          : undefined
-      }
-      ariaLabel="Tabla de mis citas"
+      className={className}
+      ariaLabel="Tabla de citas"
       renderCell={getKeyValue}
-      columns={
-        session?.user.role === "PATIENT" ? columnsPatient : columnsDoctor
-      }
-      INITIAL_VISIBLE_COLUMNS={(session?.user.role === "PATIENT"
+      columns={role === "PATIENT" ? columnsPatient : columnsDoctor}
+      INITIAL_VISIBLE_COLUMNS={(role === "PATIENT"
         ? columnsPatient
         : columnsDoctor
       ).map((column) => column.key)}
       rows={appointments || []}
-      isLoading={isLoadingAppointments}
-      title="Mis citas"
+      title="Citas"
       filterSearch={
-        session?.user.role === "PATIENT"
+        role === "PATIENT"
           ? (items, filterValue) =>
               items.filter((item) =>
                 item.doctor.name
@@ -147,10 +145,17 @@ export default function MedicalAppointment() {
         },
       }}
       searchBy={
-        session?.user.role === "PATIENT"
+        role === "PATIENT"
           ? "por nombre del doctor..."
           : "por nombre del paciente..."
       }
+      actions={{
+        view: (item) => {
+          role === "PATIENT"
+            ? router.push(`/dashboard/user/${item.doctorId}`)
+            : router.push(`/dashboard/user/${item.patientId}`);
+        },
+      }}
     />
   );
 }

@@ -23,9 +23,11 @@ import { Department } from "@/types/departments";
 export default function BasicInformation({
   center,
   isAdmin = false,
+  isEditable = false,
 }: {
   center: Center;
   isAdmin?: boolean;
+  isEditable?: boolean;
 }) {
   const [data, setData] = useState({
     name: center.name,
@@ -95,32 +97,34 @@ export default function BasicInformation({
       <Card className="max-w-full">
         <CardHeader className="flex gap-4 justify-between">
           <h2 className="text-md">Información básica</h2>
-          <div className="flex flex-col gap-2">
-            <Tooltip
-              content={
-                isSelected ? "Deshabilitar edición" : "Habilitar edición"
-              }
-              color={isSelected ? "primary" : "default"}
-            >
-              <Component {...getBaseProps()}>
-                <VisuallyHidden>
-                  <input {...getInputProps()} />
-                </VisuallyHidden>
-                <div
-                  {...getWrapperProps()}
-                  className={slots.wrapper({
-                    className: [
-                      "w-8 h-8",
-                      "flex items-center justify-center",
-                      "rounded-lg bg-default-100 hover:bg-default-200",
-                    ],
-                  })}
-                >
-                  <PencilIcon className="w-4" />
-                </div>
-              </Component>
-            </Tooltip>
-          </div>
+          {isEditable && (
+            <div className="flex flex-col gap-2">
+              <Tooltip
+                content={
+                  isSelected ? "Deshabilitar edición" : "Habilitar edición"
+                }
+                color={isSelected ? "primary" : "default"}
+              >
+                <Component {...getBaseProps()}>
+                  <VisuallyHidden>
+                    <input {...getInputProps()} />
+                  </VisuallyHidden>
+                  <div
+                    {...getWrapperProps()}
+                    className={slots.wrapper({
+                      className: [
+                        "w-8 h-8",
+                        "flex items-center justify-center",
+                        "rounded-lg bg-default-100 hover:bg-default-200",
+                      ],
+                    })}
+                  >
+                    <PencilIcon className="w-4" />
+                  </div>
+                </Component>
+              </Tooltip>
+            </div>
+          )}
         </CardHeader>
         <Divider />
         <CardBody className="overflow-hidden">
@@ -261,16 +265,6 @@ export default function BasicInformation({
               isInvalid={Boolean(errors.email)}
               errorMessage={errors.email}
             />
-
-            {/* {(session?.user.role === "DOCTOR" ||
-              session?.user.role === "DIRECTOR") && (
-              <Input
-                label="Especialidad"
-                placeholder="Ingrese su especialidad"
-                value={session?.user.specialization || ""}
-                isDisabled={true}
-              />
-            )} */}
 
             <div className="flex gap-2 justify-end">
               {isSelected && (

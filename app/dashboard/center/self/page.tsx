@@ -9,7 +9,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function CenterPage() {
   const session = await getServerSession(authOptions);
-  if (session?.user.role !== "DIRECTOR") return redirect("/");
+  if (
+    session?.user.role !== "DIRECTOR" &&
+    session?.user.role !== "DOCTOR" &&
+    session?.user.role !== "SECRETARY"
+  )
+    return redirect("/");
 
   const center = await prisma.center.findUnique({
     where: {
@@ -20,7 +25,7 @@ export default async function CenterPage() {
     },
   });
 
-  if (!center) redirect("/dashboard/");
+  if (!center) redirect("/dashboard");
 
   return (
     <>
@@ -35,7 +40,10 @@ export default async function CenterPage() {
 
       <div className="my-6 gap-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         <div id="basic-info">
-          <BasicInformation center={center} />
+          <BasicInformation
+            center={center}
+            isEditable={session.user.role === "DIRECTOR"}
+          />
         </div>
 
         <Workers center={center} className="col-span-1 sm:col-span-2" />

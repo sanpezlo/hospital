@@ -4,7 +4,7 @@ import { errorHandler } from "@/lib/error-hanlder";
 import { UpdateCenterSchema } from "@/types/center";
 import { BadRequest, Unauthorized, Forbidden } from "http-errors";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 

@@ -87,6 +87,20 @@ export default function Header() {
     },
   ];
 
+  const doctorItems = [
+    {
+      title: "Panel de control",
+      link: "/dashboard",
+    },
+  ];
+
+  const secretaryItems = [
+    {
+      title: "Panel de control",
+      link: "/dashboard",
+    },
+  ];
+
   return (
     <Navbar
       onMenuOpenChange={setIsMenuOpen}
@@ -118,6 +132,24 @@ export default function Header() {
 
         {session?.user.role === "DIRECTOR" &&
           directorItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link as={NextLink} color="foreground" href={item.link}>
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {session?.user.role === "DOCTOR" &&
+          doctorItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link as={NextLink} color="foreground" href={item.link}>
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {session?.user.role === "SECRETARY" &&
+          secretaryItems.map((item, index) => (
             <NavbarItem key={`${item.title}-${index}`}>
               <Link as={NextLink} color="foreground" href={item.link}>
                 {item.title}
@@ -248,6 +280,38 @@ export default function Header() {
 
         {session?.user.role === "DIRECTOR" &&
           directorItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link
+                as={NextLink}
+                color="foreground"
+                className="w-full"
+                href={item.link}
+                size="lg"
+                onPress={() => setIsMenuOpen(false)}
+              >
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {session?.user.role === "DOCTOR" &&
+          doctorItems.map((item, index) => (
+            <NavbarItem key={`${item.title}-${index}`}>
+              <Link
+                as={NextLink}
+                color="foreground"
+                className="w-full"
+                href={item.link}
+                size="lg"
+                onPress={() => setIsMenuOpen(false)}
+              >
+                {item.title}
+              </Link>
+            </NavbarItem>
+          ))}
+
+        {session?.user.role === "SECRETARY" &&
+          secretaryItems.map((item, index) => (
             <NavbarItem key={`${item.title}-${index}`}>
               <Link
                 as={NextLink}

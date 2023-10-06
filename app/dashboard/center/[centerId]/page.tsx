@@ -13,7 +13,7 @@ export default async function CenterPage({
   params: { centerId: string };
 }) {
   const session = await getServerSession(authOptions);
-  if (session?.user.role !== "ADMIN") return redirect("/");
+  if (!session || session.user.role !== "ADMIN") return redirect("/");
 
   const center = await prisma.center.findUnique({
     where: {
@@ -24,7 +24,7 @@ export default async function CenterPage({
     },
   });
 
-  if (!center) redirect("/dashboard/");
+  if (!center) redirect("/dashboard");
 
   return (
     <>
@@ -39,7 +39,11 @@ export default async function CenterPage({
 
       <div className="my-6 gap-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
         <div id="basic-info">
-          <BasicInformation center={center} />
+          <BasicInformation
+            center={center}
+            isAdmin={session.user.role === "ADMIN"}
+            isEditable={session.user.role === "ADMIN"}
+          />
         </div>
 
         <Workers center={center} className="col-span-1 sm:col-span-2" />

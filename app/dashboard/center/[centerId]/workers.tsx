@@ -78,6 +78,11 @@ export default function Workers({
         onPressAdd={() => {
           router.push("/dashboard#users");
         }}
+        actions={{
+          view: (item) => {
+            router.push(`/dashboard/user/${item.id}`);
+          },
+        }}
       />
     </>
   );
