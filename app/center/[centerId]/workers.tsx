@@ -27,7 +27,7 @@ const columns = [
   },
 ];
 
-export default function Center({
+export default function Workers({
   center,
   className,
 }: {

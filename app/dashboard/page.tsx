@@ -7,7 +7,7 @@ import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import Centers from "@/app/centers";
 import { prisma } from "@/lib/prisma";
-import CenterComponent from "@/app/dashboard/center/[centerId]/center";
+import Workers from "@/app/dashboard/center/[centerId]/workers";
 import BasicInformation from "@/app/dashboard/center/[centerId]/basic-information";
 import { Center as CenterPrisma, User } from "@prisma/client";
 
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
               <BasicInformation center={center as CenterPrisma} />
             </div>
 
-            <CenterComponent
+            <Workers
               center={
                 center as {
                   users: User[];

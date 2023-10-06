@@ -1,4 +1,4 @@
-import CenterComponent from "@/app/center/[centerId]/center";
+import Workers from "@/app/center/[centerId]/workers";
 import BasicInformation from "@/app/center/[centerId]/basic-information";
 import { Divider } from "@nextui-org/divider";
 import { Chip } from "@nextui-org/chip";
@@ -37,7 +37,7 @@ export default async function CenterPage({
           <BasicInformation center={center} />
         </div>
 
-        <CenterComponent center={center} className="col-span-1 sm:col-span-2" />
+        <Workers center={center} className="col-span-1 sm:col-span-2" />
       </div>
     </>
   );
