@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest) {
       if (!passwordMatch) throw new BadRequest("La contraseña es incorrecta");
     }
 
-    if (updateUser.email !== session.user.email) {
+    if (updateUser.email && updateUser.email !== session.user.email) {
       const user = await prisma.user.findUnique({
         where: {
           email: updateUser.email,

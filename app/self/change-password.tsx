@@ -67,7 +67,7 @@ export default function ChangePassword({
         {(onClose) => (
           <>
             <ModalHeader>
-              <h1>Camibiar contraseña</h1>
+              <h1>Cambiar contraseña</h1>
             </ModalHeader>
             <ModalBody>
               <Input
@@ -93,7 +93,7 @@ export default function ChangePassword({
                       }))
                     }
                   >
-                    {isVisible ? (
+                    {isVisible.password ? (
                       <EyeSlashIcon className="text-default-400 pointer-events-none w-6" />
                     ) : (
                       <EyeIcon className="text-default-400 pointer-events-none w-6" />
@@ -123,7 +123,7 @@ export default function ChangePassword({
                       }))
                     }
                   >
-                    {isVisible ? (
+                    {isVisible.newPassword ? (
                       <EyeSlashIcon className="text-default-400 pointer-events-none w-6" />
                     ) : (
                       <EyeIcon className="text-default-400 pointer-events-none w-6" />
