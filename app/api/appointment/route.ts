@@ -17,6 +17,8 @@ export async function POST(request: NextRequest) {
 
     const appointment = await prisma.medicalAppointment.create({
       data: {
+        type: createAppointment.type,
+        specialization: createAppointment.specialization,
         date: createAppointment.date,
         doctor: {
           connect: {
@@ -28,7 +30,10 @@ export async function POST(request: NextRequest) {
             id: createAppointment.patientId,
           },
         },
-        status: "ACCEPTED",
+        status:
+          createAppointment.type === "Consulta con especialista"
+            ? "PENDING"
+            : "ACCEPTED",
       },
     });
     return NextResponse.json(appointment);

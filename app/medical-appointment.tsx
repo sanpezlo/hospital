@@ -59,6 +59,15 @@ const hours = [
   "11:00 PM",
 ] as const;
 
+const types = [
+  "Consulta general",
+  "Consulta con especialista",
+  "Vacunación",
+  "Control",
+  "Cita de documentación",
+  "Control y desarrollo",
+];
+
 const years = [
   new Date().getFullYear().toString(),
   (new Date().getFullYear() + 1).toString(),
@@ -68,6 +77,8 @@ export default function MedicalAppointment() {
   const { data: session, status } = useSession();
 
   const [data, setData] = useState({
+    type: types[0],
+    specialization: "Ninguna",
     centerId: "",
     doctorId: "",
     year: years[0],
@@ -77,6 +88,8 @@ export default function MedicalAppointment() {
   });
 
   const [errors, setErrors] = useState({
+    type: "",
+    specialization: "",
     centerId: "",
     doctorId: "",
     year: "",
@@ -91,7 +104,12 @@ export default function MedicalAppointment() {
   );
 
   const { data: doctors, isLoading: isLoadingDoctors } = useSWR<User[]>(
-    data.centerId ? "/api/user/doctor/center/" + data.centerId : null,
+    data.centerId
+      ? "/api/user/doctor/center/" +
+          data.centerId +
+          "?specialization=" +
+          data.specialization
+      : null,
     fetcher()
   );
 
@@ -107,23 +125,37 @@ export default function MedicalAppointment() {
     fetcher()
   );
 
+  const { data: specializations, isLoading: isLoadingSpecialization } = useSWR<
+    string[]
+  >(data.type == types[1] ? "/api/specialization" : null, fetcher());
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const bodyRequest: CreateAppointment = {
-      date: new Date(
-        parseInt(data.year),
-        parseInt(data.month) - 1,
-        parseInt(data.day),
-        parseInt(
-          militaryTime(
-            data.hour.slice(0, -3),
-            data.hour.slice(-2) as "AM" | "PM"
-          )
-        )
-      ),
-      doctorId: data.doctorId,
-      patientId: session?.user.id || "",
-    };
+    const bodyRequest: CreateAppointment =
+      data.type === types[1]
+        ? {
+            date: new Date(),
+            doctorId: data.doctorId,
+            patientId: session?.user.id || "",
+            specialization: data.specialization,
+            type: types[1],
+          }
+        : {
+            date: new Date(
+              parseInt(data.year),
+              parseInt(data.month) - 1,
+              parseInt(data.day),
+              parseInt(
+                militaryTime(
+                  data.hour.slice(0, -3),
+                  data.hour.slice(-2) as "AM" | "PM"
+                )
+              )
+            ),
+            doctorId: data.doctorId,
+            patientId: session?.user.id || "",
+            type: data.type,
+          };
 
     const response = await fetch("/api/appointment", {
       method: "POST",
@@ -135,6 +167,8 @@ export default function MedicalAppointment() {
 
     if (response.ok) {
       setData({
+        type: types[0],
+        specialization: "Ninguna",
         centerId: "",
         doctorId: "",
         year: years[0],
@@ -171,6 +205,71 @@ export default function MedicalAppointment() {
           className="flex flex-col gap-4"
           onSubmit={handleSubmit}
         >
+          <Select
+            isRequired
+            label="Tipo de cita"
+            placeholder="Selecciona un tipo de cita"
+            selectedKeys={new Set(data.type ? [data.type] : [])}
+            onSelectionChange={(value) => {
+              setErrors((prev) => ({ ...prev, type: "" }));
+              if (value !== "all" && value.size > 0)
+                setData({
+                  ...data,
+                  type: value.values().next().value,
+                  specialization: "Ninguna",
+                  doctorId: "",
+                  day: "",
+                  hour: "",
+                });
+            }}
+            errorMessage={errors.type}
+            isInvalid={Boolean(errors.type)}
+          >
+            {types.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </Select>
+
+          {data.type === types[1] && (
+            <Select
+              isRequired
+              label="Especialización"
+              placeholder="Seleccione una especialización"
+              selectedKeys={
+                new Set(data.specialization ? [data.specialization] : [])
+              }
+              onSelectionChange={(value) => {
+                setErrors((prev) => ({ ...prev, specialization: "" }));
+                if (value !== "all") {
+                  const specialization = value.values().next().value;
+                  if (specialization)
+                    setData({
+                      ...data,
+                      specialization: specialization,
+                    });
+                }
+              }}
+              isLoading={isLoadingSpecialization}
+              isDisabled={(specializations || []).length === 0}
+              errorMessage={
+                errors.specialization
+                  ? errors.specialization
+                  : !isLoadingSpecialization &&
+                    (specializations || []).length === 0 &&
+                    "No hay especializaciónes registradas"
+              }
+              isInvalid={Boolean(errors.specialization)}
+            >
+              {(specializations || []).map((specialization) => (
+                <SelectItem key={specialization} value={specialization}>
+                  {specialization}
+                </SelectItem>
+              ))}
+            </Select>
+          )}
+
           <Select
             isRequired
             label="Centro"
@@ -238,109 +337,198 @@ export default function MedicalAppointment() {
             ))}
           </Select>
 
-          <div className="flex flex-row gap-4">
-            <Select
-              isRequired
-              label="Año"
-              selectedKeys={new Set(data.year ? [data.year] : [])}
-              onSelectionChange={(value) => {
-                setErrors((prev) => ({ ...prev, year: "" }));
-                if (value !== "all")
-                  setData({
-                    ...data,
-                    year: value.values().next().value,
-                    month: "",
-                    day: "",
-                    hour: "",
-                  });
-              }}
-              errorMessage={errors.year}
-              isInvalid={Boolean(errors.year)}
-            >
-              {years.map((year) => (
-                <SelectItem key={year} value={year}>
-                  {year}
-                </SelectItem>
-              ))}
-            </Select>
+          {data.type !== types[1] && (
+            <>
+              <div className="flex flex-row gap-4">
+                <Select
+                  isRequired
+                  label="Año"
+                  selectedKeys={new Set(data.year ? [data.year] : [])}
+                  onSelectionChange={(value) => {
+                    setErrors((prev) => ({ ...prev, year: "" }));
+                    if (value !== "all")
+                      setData({
+                        ...data,
+                        year: value.values().next().value,
+                        month: "",
+                        day: "",
+                        hour: "",
+                      });
+                  }}
+                  errorMessage={errors.year}
+                  isInvalid={Boolean(errors.year)}
+                >
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </Select>
 
-            <Select
-              isRequired
-              label="Mes"
-              selectedKeys={new Set(data.month ? [data.month] : [])}
-              onSelectionChange={(value) => {
-                setErrors((prev) => ({ ...prev, month: "" }));
-                if (value !== "all")
-                  setData({
-                    ...data,
-                    month: value.values().next().value,
-                    day: "",
-                    hour: "",
-                  });
-              }}
-              disabledKeys={months
-                .map((month, index) => (index + 1).toString())
-                .filter((month, index) => {
-                  const m = new Date().getMonth();
+                <Select
+                  isRequired
+                  label="Mes"
+                  selectedKeys={new Set(data.month ? [data.month] : [])}
+                  onSelectionChange={(value) => {
+                    setErrors((prev) => ({ ...prev, month: "" }));
+                    if (value !== "all")
+                      setData({
+                        ...data,
+                        month: value.values().next().value,
+                        day: "",
+                        hour: "",
+                      });
+                  }}
+                  disabledKeys={months
+                    .map((month, index) => (index + 1).toString())
+                    .filter((month, index) => {
+                      const m = new Date().getMonth();
 
-                  if (data.year === years[0]) return index < m;
+                      if (data.year === years[0]) return index < m;
 
-                  return index > m;
-                })}
-              errorMessage={errors.month}
-              isInvalid={Boolean(errors.month)}
-            >
-              {months.map((month, index) => (
-                <SelectItem key={(index + 1).toString()} value={month}>
-                  {month}
-                </SelectItem>
-              ))}
-            </Select>
+                      return index > m;
+                    })}
+                  errorMessage={errors.month}
+                  isInvalid={Boolean(errors.month)}
+                >
+                  {months.map((month, index) => (
+                    <SelectItem key={(index + 1).toString()} value={month}>
+                      {month}
+                    </SelectItem>
+                  ))}
+                </Select>
 
-            <Select
-              isRequired
-              label="Día"
-              selectedKeys={new Set(data.day ? [data.day] : [])}
-              onSelectionChange={(value) => {
-                setErrors((prev) => ({ ...prev, day: "" }));
-                if (value !== "all")
-                  setData({
-                    ...data,
-                    day: value.values().next().value,
-                    hour: "",
-                  });
-              }}
-              isDisabled={
-                !data.year ||
-                !data.month ||
-                !data.doctorId ||
-                isLoadingSchedules ||
-                schedules?.length === 0
-              }
-              isLoading={isLoadingSchedules}
-              errorMessage={
-                errors.day
-                  ? errors.day
-                  : (!data.doctorId || (schedules || []).length === 0) &&
-                    "No hay días disponibles"
-              }
-              isInvalid={Boolean(errors.day)}
-              disabledKeys={[
-                ...Array.from(
-                  {
-                    length: new Date(
-                      parseInt(data.year),
-                      parseInt(data.month),
-                      0
-                    ).getDate(),
-                  },
-                  (_, i) => i + 1
-                )
-                  .filter((day) => {
+                <Select
+                  isRequired
+                  label="Día"
+                  selectedKeys={new Set(data.day ? [data.day] : [])}
+                  onSelectionChange={(value) => {
+                    setErrors((prev) => ({ ...prev, day: "" }));
+                    if (value !== "all")
+                      setData({
+                        ...data,
+                        day: value.values().next().value,
+                        hour: "",
+                      });
+                  }}
+                  isDisabled={
+                    !data.year ||
+                    !data.month ||
+                    !data.doctorId ||
+                    isLoadingSchedules ||
+                    schedules?.length === 0
+                  }
+                  isLoading={isLoadingSchedules}
+                  errorMessage={
+                    errors.day
+                      ? errors.day
+                      : (!data.doctorId || (schedules || []).length === 0) &&
+                        "No hay días disponibles"
+                  }
+                  isInvalid={Boolean(errors.day)}
+                  disabledKeys={[
+                    ...Array.from(
+                      {
+                        length: new Date(
+                          parseInt(data.year),
+                          parseInt(data.month),
+                          0
+                        ).getDate(),
+                      },
+                      (_, i) => i + 1
+                    )
+                      .filter((day) => {
+                        const date = new Date(
+                          parseInt(data.year),
+                          parseInt(data.month) - 1,
+                          day
+                        );
+
+                        const dayName = capitalize(
+                          date.toLocaleDateString("es", {
+                            weekday: "long",
+                          })
+                        );
+
+                        return !schedules?.some((schedule) =>
+                          schedule.days.some((day) => day === dayName)
+                        );
+                      })
+                      .map((day) => day.toString()),
+                    ...Array.from(
+                      {
+                        length: new Date(
+                          parseInt(data.year),
+                          parseInt(data.month),
+                          0
+                        ).getDate(),
+                      },
+                      (_, i) => i + 1
+                    )
+                      .filter((day) => {
+                        const date = new Date();
+
+                        const today = date.getDate();
+
+                        if (
+                          data.year === years[0] &&
+                          data.month === (date.getMonth() + 1).toString()
+                        ) {
+                          return day <= today;
+                        }
+                        return false;
+                      })
+                      .map((day) => day.toString()),
+                  ]}
+                >
+                  {Array.from(
+                    {
+                      length: new Date(
+                        parseInt(data.year),
+                        parseInt(data.month),
+                        0
+                      ).getDate(),
+                    },
+                    (_, i) => i + 1
+                  ).map((day) => (
+                    <SelectItem key={day.toString()} value={day.toString()}>
+                      {day.toString()}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+
+              <Select
+                isRequired
+                label="Hora"
+                placeholder="Selecciona una hora"
+                selectedKeys={new Set(data.hour ? [data.hour] : [])}
+                onSelectionChange={(value) => {
+                  setErrors((prev) => ({ ...prev, hour: "" }));
+                  if (value !== "all")
+                    setData({ ...data, hour: value.values().next().value });
+                }}
+                errorMessage={
+                  errors.hour
+                    ? errors.hour
+                    : !data.day && "No hay horas disponibles"
+                }
+                isInvalid={Boolean(errors.hour)}
+                isDisabled={
+                  !data.year ||
+                  !data.month ||
+                  !data.doctorId ||
+                  !data.day ||
+                  isLoadingSchedules ||
+                  schedules?.length === 0
+                }
+                isLoading={isLoadingAppointments}
+                disabledKeys={[
+                  ...hours.filter((hour) => {
                     const date = new Date(
                       parseInt(data.year),
                       parseInt(data.month) - 1,
-                      day
+                      parseInt(data.day)
                     );
 
                     const dayName = capitalize(
@@ -349,125 +537,43 @@ export default function MedicalAppointment() {
                       })
                     );
 
-                    return !schedules?.some((schedule) =>
+                    const schedulesAvailable = schedules?.filter((schedule) =>
                       schedule.days.some((day) => day === dayName)
                     );
-                  })
-                  .map((day) => day.toString()),
-                ...Array.from(
-                  {
-                    length: new Date(
-                      parseInt(data.year),
-                      parseInt(data.month),
-                      0
-                    ).getDate(),
-                  },
-                  (_, i) => i + 1
-                )
-                  .filter((day) => {
-                    const date = new Date();
 
-                    const today = date.getDate();
+                    const time = parseInt(
+                      militaryTime(
+                        hour.slice(0, -3),
+                        hour.slice(-2) as "AM" | "PM"
+                      )
+                    );
 
-                    if (
-                      data.year === years[0] &&
-                      data.month === (date.getMonth() + 1).toString()
-                    ) {
-                      return day <= today;
-                    }
-                    return false;
-                  })
-                  .map((day) => day.toString()),
-              ]}
-            >
-              {Array.from(
-                {
-                  length: new Date(
-                    parseInt(data.year),
-                    parseInt(data.month),
-                    0
-                  ).getDate(),
-                },
-                (_, i) => i + 1
-              ).map((day) => (
-                <SelectItem key={day.toString()} value={day.toString()}>
-                  {day.toString()}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-
-          <Select
-            isRequired
-            label="Hora"
-            placeholder="Selecciona una hora"
-            selectedKeys={new Set(data.hour ? [data.hour] : [])}
-            onSelectionChange={(value) => {
-              setErrors((prev) => ({ ...prev, hour: "" }));
-              if (value !== "all")
-                setData({ ...data, hour: value.values().next().value });
-            }}
-            errorMessage={
-              errors.hour
-                ? errors.hour
-                : !data.day && "No hay horas disponibles"
-            }
-            isInvalid={Boolean(errors.hour)}
-            isDisabled={
-              !data.year ||
-              !data.month ||
-              !data.doctorId ||
-              !data.day ||
-              isLoadingSchedules ||
-              schedules?.length === 0
-            }
-            isLoading={isLoadingAppointments}
-            disabledKeys={[
-              ...hours.filter((hour) => {
-                const date = new Date(
-                  parseInt(data.year),
-                  parseInt(data.month) - 1,
-                  parseInt(data.day)
-                );
-
-                const dayName = capitalize(
-                  date.toLocaleDateString("es", {
-                    weekday: "long",
-                  })
-                );
-
-                const schedulesAvailable = schedules?.filter((schedule) =>
-                  schedule.days.some((day) => day === dayName)
-                );
-
-                const time = parseInt(
-                  militaryTime(hour.slice(0, -3), hour.slice(-2) as "AM" | "PM")
-                );
-
-                return !schedulesAvailable?.some((schedule) => {
-                  return (
-                    parseInt(schedule.startTime) <= time &&
-                    parseInt(schedule.departureTime) >= time
-                  );
-                });
-              }),
-              ...(appointments || [])
-                .map((appointment) => new Date(appointment.date))
-                .filter(
-                  (date) =>
-                    date.getFullYear() === parseInt(data.year) &&
-                    date.getMonth() === parseInt(data.month) - 1 &&
-                    date.getDate() === parseInt(data.day)
-                )
-                .map((date) => standardTime(`${date.getHours()}:00`)),
-            ]}
-          >
-            {hours.map((hour) => (
-              <SelectItem key={hour} value={hour}>
-                {hour}
-              </SelectItem>
-            ))}
-          </Select>
+                    return !schedulesAvailable?.some((schedule) => {
+                      return (
+                        parseInt(schedule.startTime) <= time &&
+                        parseInt(schedule.departureTime) >= time
+                      );
+                    });
+                  }),
+                  ...(appointments || [])
+                    .map((appointment) => new Date(appointment.date))
+                    .filter(
+                      (date) =>
+                        date.getFullYear() === parseInt(data.year) &&
+                        date.getMonth() === parseInt(data.month) - 1 &&
+                        date.getDate() === parseInt(data.day)
+                    )
+                    .map((date) => standardTime(`${date.getHours()}:00`)),
+                ]}
+              >
+                {hours.map((hour) => (
+                  <SelectItem key={hour} value={hour}>
+                    {hour}
+                  </SelectItem>
+                ))}
+              </Select>
+            </>
+          )}
 
           <div className="flex gap-2 justify-end">
             <Button
@@ -476,11 +582,14 @@ export default function MedicalAppointment() {
               type="submit"
               isDisabled={
                 !data.centerId ||
-                !data.year ||
-                !data.month ||
-                !data.day ||
-                !data.hour ||
+                !data.doctorId ||
+                (data.type !== types[1] && !data.year) ||
+                (data.type !== types[1] && !data.month) ||
+                (data.type !== types[1] && !data.day) ||
+                (data.type !== types[1] && !data.hour) ||
+                (data.type === types[1] && data.specialization === "Ninguna") ||
                 Boolean(errors.centerId) ||
+                Boolean(errors.doctorId) ||
                 Boolean(errors.year) ||
                 Boolean(errors.month) ||
                 Boolean(errors.day) ||

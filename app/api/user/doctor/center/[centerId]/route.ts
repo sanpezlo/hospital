@@ -19,6 +19,7 @@ export async function GET(
             role: "DIRECTOR",
           },
         ],
+        specialization: request.nextUrl.searchParams.get("specialization"),
         centerId: params.centerId,
       },
     });

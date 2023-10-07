@@ -92,8 +92,10 @@ enum Role {
 }
 
 model MedicalAppointment {
-  id   String   @id @default(cuid())
-  date DateTime
+  id             String   @id @default(cuid())
+  date           DateTime
+  type           String
+  specialization String?
 
   patient   User   @relation(name: "PatientAppointments", fields: [patientId], references: [id])
   patientId String

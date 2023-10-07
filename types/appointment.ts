@@ -13,6 +13,15 @@ export const CreateAppointmentSchema = z.object({
     required_error: "El doctor es requerido",
     invalid_type_error: "El doctor debe ser un texto",
   }),
+  type: z.string({
+    required_error: "El tipo de cita es requerido",
+    invalid_type_error: "El tipo de cita debe ser un texto",
+  }),
+  specialization: z
+    .string({
+      invalid_type_error: "La especialidad debe ser un texto",
+    })
+    .optional(),
 });
 
 export type CreateAppointment = z.infer<typeof CreateAppointmentSchema>;
@@ -27,6 +36,16 @@ export const UpdateAppointmentSchema = z.object({
   doctorId: z
     .string({
       invalid_type_error: "El doctor debe ser un texto",
+    })
+    .optional(),
+  type: z
+    .string({
+      invalid_type_error: "El tipo de cita debe ser un texto",
+    })
+    .optional(),
+  specialization: z
+    .string({
+      invalid_type_error: "La especialidad debe ser un texto",
     })
     .optional(),
 });
