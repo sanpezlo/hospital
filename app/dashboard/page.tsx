@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import Workers from "@/app/dashboard/center/[centerId]/workers";
 import BasicInformation from "@/app/dashboard/center/[centerId]/basic-information";
 import { Center as CenterPrisma, User } from "@prisma/client";
+import Appointments from "@/app/dashboard/appointments";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -112,6 +113,14 @@ export default async function DashboardPage() {
             />
           </>
         )}
+
+        {session.user.role === "SECRETARY" ||
+          (session.user.role === "DIRECTOR" && (
+            <Appointments
+              centerId={session.user.centerId || ""}
+              className="col-span-1 sm:col-span-2 xl:col-span-3"
+            />
+          ))}
       </div>
     </>
   );

@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { role } from "@/lib/parse";
+import Schedules from "./schedules";
 
 export default async function UserPage({
   params,
@@ -35,6 +36,7 @@ export default async function UserPage({
           },
         },
       },
+      schedules: true,
     },
   });
 
@@ -97,6 +99,13 @@ export default async function UserPage({
                 : user.doctorAppointment
             }
             role={user.role}
+          />
+        )}
+
+        {Boolean(user.centerId) && (
+          <Schedules
+            schedules={user.schedules}
+            className="col-span-1 sm:col-span-2 xl:col-span-3"
           />
         )}
       </div>

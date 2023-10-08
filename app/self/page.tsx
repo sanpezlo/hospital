@@ -6,6 +6,7 @@ import { Chip } from "@nextui-org/chip";
 import { role } from "@/lib/parse";
 import MedicalAppointment from "@/app/self/medical-appointment";
 import BasicInformation from "@/app/self/basic-information";
+import Schedules from "./schedules";
 
 export default async function SelfPage() {
   const session = await getServerSession(authOptions);
@@ -45,6 +46,15 @@ export default async function SelfPage() {
           session.user.role === "DIRECTOR") && (
           <div id="appointments" className="col-span-1 sm:col-span-2">
             <MedicalAppointment />
+          </div>
+        )}
+
+        {Boolean(session.user.centerId) && (
+          <div
+            id="schedules"
+            className="col-span-1 sm:col-span-2 xl:col-span-3"
+          >
+            <Schedules />
           </div>
         )}
       </div>

@@ -70,6 +70,7 @@ export default function Table({
     view?: (item: any) => void;
     edit?: (item: any) => void;
     delete?: (item: any) => void;
+    approve?: (item: any) => void;
   };
   isLoading?: boolean;
   title: string;

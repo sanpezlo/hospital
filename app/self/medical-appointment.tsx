@@ -17,6 +17,11 @@ const columnsPatient = [
     sortable: true,
   },
   {
+    key: "type",
+    label: "TIPO",
+    sortable: false,
+  },
+  {
     key: "doctor.name",
     label: "DOCTOR",
     sortable: true,
@@ -65,6 +70,11 @@ const columnsDoctor = [
     sortable: true,
   },
   {
+    key: "type",
+    label: "TIPO",
+    sortable: false,
+  },
+  {
     key: "patient.name",
     label: "PACIENTE",
     sortable: true,
@@ -79,6 +89,15 @@ const columnsDoctor = [
     label: "ESTADO",
     sortable: false,
   },
+];
+
+const types = [
+  "Consulta general",
+  "Consulta con especialista",
+  "Vacunación",
+  "Control",
+  "Cita de documentación",
+  "Control y desarrollo",
 ];
 
 export default function MedicalAppointment() {
@@ -144,6 +163,13 @@ export default function MedicalAppointment() {
               key: MedicalAppointmentStatus.COMPLETED,
             },
           ],
+        },
+        type: {
+          name: "Tipo",
+          options: types.map((type) => ({
+            name: type,
+            key: type,
+          })),
         },
       }}
       searchBy={

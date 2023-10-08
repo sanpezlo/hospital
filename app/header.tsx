@@ -63,6 +63,11 @@ export default function Header() {
           title: "Mis citas",
           link: "/self#appointments",
         },
+        {
+          roles: [Role.DOCTOR, Role.DIRECTOR, Role.SECRETARY],
+          title: "Mis horarios",
+          link: "/self#schedules",
+        },
       ],
     },
     {
