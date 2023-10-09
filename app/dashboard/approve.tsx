@@ -147,7 +147,7 @@ export default function Approve({
         {(onClose) => (
           <>
             <ModalHeader>
-              <h1>Cambiar contraseña</h1>
+              <h1>Agendar cita</h1>
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-row gap-4">
