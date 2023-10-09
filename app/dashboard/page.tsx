@@ -114,13 +114,13 @@ export default async function DashboardPage() {
           </>
         )}
 
-        {session.user.role === "SECRETARY" ||
-          (session.user.role === "DIRECTOR" && (
-            <Appointments
-              centerId={session.user.centerId || ""}
-              className="col-span-1 sm:col-span-2 xl:col-span-3"
-            />
-          ))}
+        {(session.user.role === "SECRETARY" ||
+          session.user.role === "DIRECTOR") && (
+          <Appointments
+            centerId={session.user.centerId || ""}
+            className="col-span-1 sm:col-span-2 xl:col-span-3"
+          />
+        )}
       </div>
     </>
   );
