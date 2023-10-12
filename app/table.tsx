@@ -1,6 +1,13 @@
 "use client";
 
-import { Dispatch, Key, SetStateAction, useMemo, useState } from "react";
+import {
+  Dispatch,
+  Key,
+  ReactNode,
+  SetStateAction,
+  useMemo,
+  useState,
+} from "react";
 import {
   Table as NextuiTable,
   TableHeader,
@@ -53,6 +60,7 @@ export default function Table({
   filterSearch = undefined,
   searchBy = "",
   onPressAdd = undefined,
+  AddButton = <></>,
 }: {
   className?: string;
   ariaLabel: string;
@@ -77,6 +85,7 @@ export default function Table({
   filterSearch?: (filtered: any[], filterValue: string) => any[];
   searchBy?: string;
   onPressAdd?: () => void;
+  AddButton?: ReactNode;
 }) {
   columns = Boolean(actions)
     ? [...columns, { key: "actions", label: "ACCIONES", sortable: false }]
@@ -190,6 +199,7 @@ export default function Table({
           isSearch={filterSearch !== undefined}
           searchBy={searchBy}
           onPressAdd={onPressAdd}
+          AddButton={AddButton}
         />
       }
       bottomContent={
@@ -282,6 +292,7 @@ function TopContent({
   onPressAdd = undefined,
   isSearch = false,
   searchBy = "",
+  AddButton = <></>,
 }: {
   filterValue: string;
   setFilterValue: Dispatch<SetStateAction<string>>;
@@ -304,6 +315,7 @@ function TopContent({
   onPressAdd?: () => void;
   isSearch?: boolean;
   searchBy?: string;
+  AddButton?: ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -395,6 +407,8 @@ function TopContent({
               Agregar
             </Button>
           )}
+
+          {Boolean(AddButton) && AddButton}
         </div>
       </div>
       <div className="flex justify-between items-center">

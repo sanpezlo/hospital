@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { role } from "@/lib/parse";
-import Schedules from "./schedules";
+import Schedules from "@/app/dashboard/user/[userId]/schedules";
+import MedicalHistory from "@/app/dashboard/user/[userId]//medical-history";
 
 export default async function UserPage({
   params,
@@ -28,6 +29,18 @@ export default async function UserPage({
         },
       },
       patientAppointment: {
+        include: {
+          doctor: {
+            include: {
+              center: true,
+            },
+          },
+        },
+      },
+      patientMedicalHistory: {
+        where: {
+          deletedAt: null,
+        },
         include: {
           doctor: {
             include: {
@@ -106,6 +119,14 @@ export default async function UserPage({
           <Schedules
             schedules={user.schedules}
             className="col-span-1 sm:col-span-2 xl:col-span-3"
+          />
+        )}
+
+        {user.role === "PATIENT" && session.user.role !== "SECRETARY" && (
+          <MedicalHistory
+            className="col-span-1 sm:col-span-2 xl:col-span-3"
+            patientId={user.id}
+            medicalHistories={user.patientMedicalHistory}
           />
         )}
       </div>

@@ -6,7 +6,8 @@ import { Chip } from "@nextui-org/chip";
 import { role } from "@/lib/parse";
 import MedicalAppointment from "@/app/self/medical-appointment";
 import BasicInformation from "@/app/self/basic-information";
-import Schedules from "./schedules";
+import Schedules from "@/app/self/schedules";
+import MedicalHistory from "@/app/self/medical-history";
 
 export default async function SelfPage() {
   const session = await getServerSession(authOptions);
@@ -56,6 +57,10 @@ export default async function SelfPage() {
           >
             <Schedules />
           </div>
+        )}
+
+        {session.user.role === "PATIENT" && (
+          <MedicalHistory className="col-span-1 sm:col-span-2 xl:col-span-3" />
         )}
       </div>
     </>

@@ -50,8 +50,10 @@ model User {
   schedules       Schedule[]
   center          Center?    @relation(fields: [centerId], references: [id])
 
-  doctorAppointment  MedicalAppointment[] @relation(name: "DoctorAppointments")
-  patientAppointment MedicalAppointment[] @relation(name: "PatientAppointments")
+  doctorAppointment     MedicalAppointment[] @relation(name: "DoctorAppointments")
+  patientAppointment    MedicalAppointment[] @relation(name: "PatientAppointments")
+  doctorMedicalHistory  MedicalHistory[]     @relation(name: "DoctorMedicalHistory")
+  patientMedicalHistory MedicalHistory[]     @relation(name: "PatientMedicalHistory")
 }
 
 model Schedule {
@@ -111,4 +113,16 @@ enum MedicalAppointmentStatus {
   PENDING
   ACCEPTED
   COMPLETED
+}
+
+model MedicalHistory {
+  id        String    @id @default(cuid())
+  date      DateTime  @default(now())
+  deletedAt DateTime?
+  fileUrl   String
+
+  patient   User   @relation(name: "PatientMedicalHistory", fields: [patientId], references: [id])
+  patientId String
+  doctor    User   @relation(name: "DoctorMedicalHistory", fields: [doctorId], references: [id])
+  doctorId  String
 }
