@@ -68,6 +68,11 @@ export default function Header() {
           title: "Mis horarios",
           link: "/self#schedules",
         },
+        {
+          roles: [Role.PATIENT],
+          title: "Mis historias medicas",
+          link: "/self#medical-history",
+        },
       ],
     },
     {

@@ -60,7 +60,12 @@ export default async function SelfPage() {
         )}
 
         {session.user.role === "PATIENT" && (
-          <MedicalHistory className="col-span-1 sm:col-span-2 xl:col-span-3" />
+          <div
+            id="medical-history"
+            className="col-span-1 sm:col-span-2 xl:col-span-3"
+          >
+            <MedicalHistory />
+          </div>
         )}
       </div>
     </>
