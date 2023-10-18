@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import Table from "@/app/table";
 import { medicalAppointmentStatus } from "@/lib/parse";
 import { useRouter } from "next/navigation";
+import { UpdateAppointment } from "@/types/appointment";
 
 const columnsPatient = [
   {
@@ -104,9 +105,53 @@ export default function MedicalAppointment() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const { data: appointments, isLoading: isLoadingAppointments } = useSWR<
-    MedicalAppointment[]
-  >("/api/appointment/self", fetcher());
+  const {
+    data: appointments,
+    isLoading: isLoadingAppointments,
+    mutate: muteateAppoitments,
+  } = useSWR<MedicalAppointment[]>("/api/appointment/self", fetcher());
+
+  const handleComplete = async (id: string) => {
+    const bodyRequest: UpdateAppointment = {
+      status: "COMPLETED",
+    };
+
+    const response = await fetch("/api/appointment/" + id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyRequest),
+    });
+
+    const body = await response.json();
+
+    if (response.ok) {
+      muteateAppoitments();
+    } else {
+      console.log({ response, body });
+    }
+  };
+
+  const handleReapprove = async (id: string, type: string) => {
+    if (type !== types[1]) return;
+
+    const bodyRequest: UpdateAppointment = {
+      status: "PENDING",
+    };
+
+    const response = await fetch("/api/appointment/" + id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyRequest),
+    });
+
+    const body = await response.json();
+
+    if (response.ok) {
+      muteateAppoitments();
+    } else {
+      console.log({ response, body });
+    }
+  };
 
   return (
     <Table
@@ -176,6 +221,19 @@ export default function MedicalAppointment() {
         session?.user.role === "PATIENT"
           ? "por nombre del doctor..."
           : "por nombre del paciente..."
+      }
+      actions={
+        session?.user.role === "PATIENT"
+          ? {
+              reapprove: (item) => {
+                handleReapprove(item.id, item.type);
+              },
+            }
+          : {
+              complete: (item) => {
+                handleComplete(item.id);
+              },
+            }
       }
     />
   );

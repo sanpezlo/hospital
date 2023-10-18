@@ -23,6 +23,12 @@ export async function GET(request: NextRequest) {
         ? await prisma.medicalAppointment.findMany({
             where: {
               patientId: session.user.id,
+              NOT: {
+                status: "COMPLETED",
+              },
+              date: {
+                gte: new Date(),
+              },
             },
             include: {
               doctor: {
@@ -38,6 +44,7 @@ export async function GET(request: NextRequest) {
         : await prisma.medicalAppointment.findMany({
             where: {
               doctorId: session.user.id,
+              status: "ACCEPTED",
             },
             include: {
               patient: {

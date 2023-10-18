@@ -48,6 +48,11 @@ export const UpdateAppointmentSchema = z.object({
       invalid_type_error: "La especialidad debe ser un texto",
     })
     .optional(),
+  status: z
+    .string({
+      invalid_type_error: "El estado debe ser un texto",
+    })
+    .optional(),
 });
 
 export type UpdateAppointment = z.infer<typeof UpdateAppointmentSchema>;

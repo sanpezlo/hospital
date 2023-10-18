@@ -14,10 +14,14 @@ export function medicalAppointmentStatus(status: MedicalAppointmentStatus) {
   return "Completada";
 }
 
-export function action(action: "view" | "edit" | "delete" | "approve") {
+export function action(
+  action: "view" | "edit" | "delete" | "approve" | "reapprove" | "complete"
+) {
   if (action === "view") return "Ver";
   if (action === "edit") return "Editar";
   if (action === "approve") return "Agendar";
+  if (action === "reapprove") return "Solictar reagendar";
+  if (action === "complete") return "Completar";
   return "Eliminar";
 }
 

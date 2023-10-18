@@ -19,24 +19,65 @@ export async function PUT(
   return errorHandler(async () => {
     const session = await getServerSession(authOptions);
     if (!session) throw new Unauthorized("No autorizado");
-    if (session.user.role !== "SECRETARY" && session.user.role !== "DIRECTOR")
-      throw new Forbidden("No autorizado");
 
-    const updateAppointment = UpdateAppointmentSchema.parse(request.body);
+    const body = await request.json();
 
-    const appointment = await prisma.medicalAppointment.update({
-      where: {
-        id: params.appointmentId,
-      },
-      data: {
-        date: updateAppointment.date,
-        doctor: updateAppointment.doctorId
-          ? { connect: { id: updateAppointment.doctorId } }
-          : undefined,
-        status: "ACCEPTED",
-      },
-    });
+    const updateAppointment = UpdateAppointmentSchema.parse(body);
 
-    return NextResponse.json(appointment);
+    if (updateAppointment.status === "ACCEPTED") {
+      if (session.user.role !== "SECRETARY" && session.user.role !== "DIRECTOR")
+        throw new Forbidden("No autorizado");
+
+      const appointment = await prisma.medicalAppointment.update({
+        where: {
+          id: params.appointmentId,
+        },
+        data: {
+          date: updateAppointment.date,
+          doctor: updateAppointment.doctorId
+            ? { connect: { id: updateAppointment.doctorId } }
+            : undefined,
+          status: "ACCEPTED",
+        },
+      });
+
+      return NextResponse.json(appointment);
+    }
+    if (updateAppointment.status === "COMPLETED") {
+      if (
+        session.user.role !== "SECRETARY" &&
+        session.user.role !== "DIRECTOR" &&
+        session.user.role !== "DOCTOR"
+      )
+        throw new Forbidden("No autorizado");
+
+      const appointment = await prisma.medicalAppointment.update({
+        where: {
+          id: params.appointmentId,
+        },
+        data: {
+          status: "COMPLETED",
+        },
+      });
+
+      return NextResponse.json(appointment);
+    }
+
+    if (updateAppointment.status === "PENDING") {
+      if (session.user.role !== "PATIENT") throw new Forbidden("No autorizado");
+
+      const appointment = await prisma.medicalAppointment.update({
+        where: {
+          id: params.appointmentId,
+        },
+        data: {
+          status: "PENDING",
+        },
+      });
+
+      return NextResponse.json(appointment);
+    }
+
+    return NextResponse.json({});
   });
 }

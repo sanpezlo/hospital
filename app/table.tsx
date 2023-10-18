@@ -79,6 +79,8 @@ export default function Table({
     edit?: (item: any) => void;
     delete?: (item: any) => void;
     approve?: (item: any) => void;
+    reapprove?: (item: any) => void;
+    complete?: (item: any) => void;
   };
   isLoading?: boolean;
   title: string;

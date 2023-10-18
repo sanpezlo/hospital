@@ -112,6 +112,7 @@ export default function Approve({
           )
         )
       ),
+      status: "ACCEPTED",
     };
 
     const response = await fetch("/api/appointment/" + id, {
