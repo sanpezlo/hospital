@@ -120,6 +120,7 @@ model MedicalHistory {
   date      DateTime  @default(now())
   deletedAt DateTime?
   fileUrl   String
+  status    String    @default("ACCEPTED")
 
   patient   User   @relation(name: "PatientMedicalHistory", fields: [patientId], references: [id])
   patientId String

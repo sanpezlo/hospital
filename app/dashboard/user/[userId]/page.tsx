@@ -40,6 +40,9 @@ export default async function UserPage({
       patientMedicalHistory: {
         where: {
           deletedAt: null,
+          NOT: {
+            status: "CANCELLED",
+          },
         },
         include: {
           doctor: {

@@ -81,6 +81,7 @@ export default function Table({
     approve?: (item: any) => void;
     reapprove?: (item: any) => void;
     complete?: (item: any) => void;
+    remove?: (item: any) => void;
   };
   isLoading?: boolean;
   title: string;

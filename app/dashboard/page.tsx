@@ -11,6 +11,7 @@ import Workers from "@/app/dashboard/center/[centerId]/workers";
 import BasicInformation from "@/app/dashboard/center/[centerId]/basic-information";
 import { Center as CenterPrisma, User } from "@prisma/client";
 import Appointments from "@/app/dashboard/appointments";
+import MedicalHistory from "@/app/dashboard/history";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -117,6 +118,14 @@ export default async function DashboardPage() {
         {(session.user.role === "SECRETARY" ||
           session.user.role === "DIRECTOR") && (
           <Appointments
+            centerId={session.user.centerId || ""}
+            className="col-span-1 sm:col-span-2 xl:col-span-3"
+          />
+        )}
+
+        {(session.user.role === "DIRECTOR" ||
+          session.user.role === "ADMIN") && (
+          <MedicalHistory
             centerId={session.user.centerId || ""}
             className="col-span-1 sm:col-span-2 xl:col-span-3"
           />

@@ -15,13 +15,21 @@ export function medicalAppointmentStatus(status: MedicalAppointmentStatus) {
 }
 
 export function action(
-  action: "view" | "edit" | "delete" | "approve" | "reapprove" | "complete"
+  action:
+    | "view"
+    | "edit"
+    | "delete"
+    | "approve"
+    | "reapprove"
+    | "complete"
+    | "remove"
 ) {
   if (action === "view") return "Ver";
   if (action === "edit") return "Editar";
   if (action === "approve") return "Agendar";
   if (action === "reapprove") return "Solictar reagendar";
   if (action === "complete") return "Completar";
+  if (action === "remove") return "Solictar eliminación";
   return "Eliminar";
 }
 

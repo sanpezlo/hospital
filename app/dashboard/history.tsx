@@ -1,18 +1,22 @@
 "use client";
 
-import "@uploadthing/react/styles.css";
-
-import { UploadButton } from "@/lib/uploadthing";
-import { MedicalHistory } from "@prisma/client";
 import Table from "@/app/table";
-import { Link } from "@nextui-org/react";
+import { fetcher } from "@/lib/fetcher";
+import { MedicalHistory } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
+import { Link } from "@nextui-org/react";
 import { UpdateHistory } from "@/types/history";
 
 const columns = [
   {
     key: "date",
     label: "FECHA",
+    sortable: true,
+  },
+  {
+    key: "patient.name",
+    label: "PACIENTE",
     sortable: true,
   },
   {
@@ -32,21 +36,26 @@ const columns = [
   },
 ];
 
-export default function MedicalHistory({
+export default function Appointments({
   className,
-  patientId,
-  medicalHistories,
+  centerId,
 }: {
   className?: string;
-  patientId: string;
-  medicalHistories: MedicalHistory[];
+  centerId: string;
 }) {
-  console.log(medicalHistories);
   const router = useRouter();
+  const {
+    data: histories,
+    isLoading: isLoadingHistories,
+    mutate: mutateHistories,
+  } = useSWR<MedicalHistory[]>(
+    centerId ? "/api/history/center/" + centerId : "/api/history/",
+    fetcher()
+  );
 
-  const handleRemove = async (id: string) => {
+  const handleDelete = async (id: string) => {
     const bodyRequest: UpdateHistory = {
-      status: "PENDING",
+      status: "CANCELLED",
     };
 
     const response = await fetch("/api/history/" + id, {
@@ -57,7 +66,9 @@ export default function MedicalHistory({
 
     const body = await response.json();
 
-    if (!response.ok) {
+    if (response.ok) {
+      mutateHistories();
+    } else {
       console.log({ response, body });
     }
   };
@@ -66,30 +77,16 @@ export default function MedicalHistory({
     <>
       <Table
         className={className}
-        ariaLabel="Tabla de historias medicas"
+        ariaLabel="Tabla de historias médicas"
         renderCell={getKeyValue}
+        isLoading={isLoadingHistories}
         columns={columns}
         INITIAL_VISIBLE_COLUMNS={columns.map((column) => column.key)}
-        rows={medicalHistories || []}
-        title="Historias medicas"
-        AddButton={
-          <UploadButton
-            endpoint={"pdfUploader"}
-            content={{
-              button: "Subir archivo",
-            }}
-            onClientUploadComplete={(res) => {
-              router.refresh();
-            }}
-            onUploadError={(error: Error) => {
-              alert(`ERROR: ${error.message}`);
-            }}
-            input={{ patientId: patientId }}
-          />
-        }
+        rows={histories || []}
+        title="Historias médicas por eliminar"
         actions={{
-          remove: (item) => {
-            handleRemove(item.id);
+          delete: (item) => {
+            handleDelete(item.id);
           },
         }}
       />
